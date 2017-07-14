@@ -79,4 +79,4 @@ theme: next
 deploy:
   type: git
   repo: https://github.com/huxiaoyang/huxiaoyang.github.io.git
-  branch: master
+  branch: major
