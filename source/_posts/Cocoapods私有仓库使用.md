@@ -94,7 +94,7 @@ CocoaPods是iOS中使用很广泛的第三方包管理工具，我们可以用�
 1. 修改工程代码，打tag，tag名称和 s.version 一致，并 push 到远程仓库.
 1. 验证 podspec 文件的有效性.
 1. 推送 podspec 文件到远程仓库.
-1. 执行 `pod search RRCache` 验证结果.
+1. 执行 `pod search 工程名` 验证结果.
 
 # TIPS
 
