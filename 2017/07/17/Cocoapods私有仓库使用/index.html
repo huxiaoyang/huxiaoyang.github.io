@@ -100,7 +100,7 @@
 <meta property="og:url" content="http://yoursite.com/2017/07/17/Cocoapods私有仓库使用/index.html">
 <meta property="og:site_name" content="HuYang&#39;s Blog">
 <meta property="og:description" content="CocoaPods是iOS中使用很广泛的第三方包管理工具，我们可以用来制作自己的开源代码库，也可以制作私有代码库。基于这些功能，我们可以用它来作为iOS的组件化管理工具。 总体步骤 创建私有Spec仓库来管理私有的podspec文件 创建私有的Pod工程文件，并提交到远程git托管平台 创建私有的Pod对应的podspec文件 验证podspec文件的有效性 提交podspec至私有的Spec仓库">
-<meta property="og:updated_time" content="2017-07-17T07:16:46.000Z">
+<meta property="og:updated_time" content="2017-07-17T07:33:23.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="CocoaPods 私有仓库使用">
 <meta name="twitter:description" content="CocoaPods是iOS中使用很广泛的第三方包管理工具，我们可以用来制作自己的开源代码库，也可以制作私有代码库。基于这些功能，我们可以用它来作为iOS的组件化管理工具。 总体步骤 创建私有Spec仓库来管理私有的podspec文件 创建私有的Pod工程文件，并提交到远程git托管平台 创建私有的Pod对应的podspec文件 验证podspec文件的有效性 提交podspec至私有的Spec仓库">
@@ -393,7 +393,7 @@ source &apos;https://huxiaoyang@bitbucket.org/huxiaoyang/MyPrivateSepc.git&apos;
 <li>修改工程代码，打tag，tag名称和 s.version 一致，并 push 到远程仓库.</li>
 <li>验证 podspec 文件的有效性.</li>
 <li>推送 podspec 文件到远程仓库.</li>
-<li>执行 <code>pod search RRCache</code> 验证结果.</li>
+<li>执行 <code>pod search 工程名</code> 验证结果.</li>
 </ol>
 <h1 id="TIPS"><a href="#TIPS" class="headerlink" title="TIPS"></a>TIPS</h1><p>首次安装 Cocoapods 会下载官方仓库到本地，受GFW的影响有时候会很慢。<br>可以在终端执行 <code>cd ~/.cocoapods</code> ，然后执行 <code>du -sh *</code>， 查看下载进度</p>
 
