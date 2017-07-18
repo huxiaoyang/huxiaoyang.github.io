@@ -50,21 +50,25 @@
           {% endif %}
 
           {% if site.categories.length > 0 %}
-              <div class="site-state-item site-state-categories">
-                  <a href="{{ url_for(theme.menu.categories+'/categories') }}">
-                      <span class="site-state-item-count">{{ site.categories.length }}</span>
-                      <span class="site-state-item-name">{{ __('state.categories') }}</span>
-                  </a>
-              </div>
+            {% set categoriesPageQuery = site.pages.find({type: 'categories'}, {lean: true}) %}
+            {% set hasCategoriesPage = categoriesPageQuery.length > 0 %}
+            <div class="site-state-item site-state-categories">
+              {% if hasCategoriesPage %}<a href="{{ url_for(categoriesPageQuery[0].path) }}">{% endif %}
+                <span class="site-state-item-count">{{ site.categories.length }}</span>
+                <span class="site-state-item-name">{{ __('state.categories') }}</span>
+              {% if hasCategoriesPage %}</a>{% endif %}
+            </div>
           {% endif %}
 
           {% if site.tags.length > 0 %}
-              <div class="site-state-item site-state-tags">
-                  <a href="{{ url_for(theme.menu.tags+'/tags') }}">
-                      <span class="site-state-item-count">{{ site.tags.length }}</span>
-                      <span class="site-state-item-name">{{ __('state.tags') }}</span>
-                  </a>
-              </div>
+            {% set tagsPageQuery = site.pages.find({type: 'tags'}, {lean: true}) %}
+            {% set hasTagsPage = tagsPageQuery.length > 0 %}
+            <div class="site-state-item site-state-tags">
+              {% if hasTagsPage %}<a href="{{ url_for(tagsPageQuery[0].path) }}">{% endif %}
+                <span class="site-state-item-count">{{ site.tags.length }}</span>
+                <span class="site-state-item-name">{{ __('state.tags') }}</span>
+              {% if hasTagsPage %}</a>{% endif %}
+            </div>
           {% endif %}
 
         </nav>
