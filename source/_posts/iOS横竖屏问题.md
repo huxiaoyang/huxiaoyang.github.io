@@ -41,7 +41,7 @@ public enum UIDeviceOrientation : Int {
 let orientation = UIDevice.current.orientation
 ```
 
-> 注意：如果iPhone锁定了竖屏，改方法会返回 `unknown`
+> 注意：如果iPhone锁定了竖屏，该方法会返回 `unknown`
 
 3、当设备变化的时候，会发出通知，我们可以通过监听 `NSNotification.Name.UIDeviceOrientationDidChange` 获取通知状态。
 
@@ -61,7 +61,7 @@ public enum UIInterfaceOrientation : Int {
 }
 ```
 
-> 注意： 这里的界面左右是和设备的左右相反的，这是因为将设备旋转到左侧需要将内容旋转到右侧，也就是UIInterfaceOrientation.landscapeLeft = UIDeviceOrientation.landscapeRight
+> 注意： 这里的界面左右是和设备的左右相反的，这是因为将设备旋转到左侧需要将内容旋转到右侧，也就是说 `UIInterfaceOrientation.landscapeLeft = UIDeviceOrientation.landscapeRight`
 
 2、 读取界面方向
 
@@ -191,7 +191,7 @@ class BaseTabBarController: UITabBarController {
 
 ## 屏幕旋转后的页面布局处理
 
-1、在iOS 8之后，当屏幕旋转的时候， `UIScreen.main.bounds` 也发生了改变。也就是说横屏时候的屏幕宽度 其实是竖屏的时候屏幕的高度，所以在使用UIScreen.main.bounds.height的宏或者自定义函数的时候一定要注意。
+1、在iOS 8之后，当屏幕旋转的时候， `UIScreen.main.bounds` 也发生了改变。也就是说横屏时候的屏幕宽度 其实是竖屏的时候屏幕的高度，所以在使用 `UIScreen.main.bounds.height` 的宏或者自定义函数的时候一定要注意。
 使用屏幕宽高的时候，这样取值：
 
 ``` bash
@@ -295,7 +295,7 @@ override var preferredInterfaceOrientationForPresentation: UIInterfaceOrientatio
     }
 ```
 
-> 注意：做强制横屏操作的时候 shouldAutorotate 一定要返回 true
+> 注意：做强制横屏操作的时候 `shouldAutorotate` 一定要返回 `true`
 
 # 实例Demo
 
