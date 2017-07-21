@@ -7,7 +7,7 @@ tags:
   - iOS
 ---
 
-UIScrollView 是iOS Cocoa框架中重要的控件爱你，基本上每个APP中都会用到，所以使用它，是对每个iOS开发者最基本的要求。
+UIScrollView 是iOS Cocoa框架中重要的控件，几乎每个APP中都会用到，所以使用它，是对每个iOS开发者最基本的要求。
 
 本文试图去了解UIScrollView它的工作原理，并且尝试去自定义一个ScrollView，同时解决多层ScrollView嵌套时的手势连贯性问题：
 
