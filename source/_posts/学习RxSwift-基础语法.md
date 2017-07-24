@@ -54,7 +54,7 @@ observable.subscribe { print($0) }
 output:
 next(😬)
 completed
-``` 
+```
 
 #### never
 
@@ -78,26 +78,26 @@ neverSequenceSubscription.disposed(by: disposeBag)
 
 ``` swift
 let obs1 = Observable<String>.empty()
-       
+
 obs1.subscribe(
-	onNext: {str in 
-    	print(str)
+    onNext: {str in
+        print(str)
      },
      onError: { (errorType) -> Void in
-     	print(errorType)
+        print(errorType)
      },
      onCompleted: { () -> Void in
-     	print("complete")
+        print("complete")
      },
      onDisposed: {() -> Void in
-     	print("dispose")
+        print("dispose")
      }
 )
-        
-output:    
+
+output:
 completed
-dispose 
-``` 
+dispose
+```
 
 #### just
 
@@ -107,14 +107,14 @@ dispose
 
 ``` swift
 let disposeBag = DisposeBag()
-    
+
     Observable.just("🔴")
         .subscribe { event in
             print(event)
         }
         .disposed(by: disposeBag)
 
-output:    
+output:
 next(🔴)
 completed
 ```
@@ -139,21 +139,19 @@ Observable<String>
 * just的升级版，同样存在一个多态方法，可以带入线程控制
 
 ``` swift
-
 let disposeBag = DisposeBag()
-    
+
     Observable.of("🐶", "🐱", "🐭", "🐹")
         .subscribe(onNext: { element in
             print(element)
         })
         .disposed(by: disposeBag)
-    
+
 output:
 🐶
 🐱
 🐭
 🐹
-
 ```
 
 #### from
@@ -163,9 +161,8 @@ output:
 * 就是将一个Array变成一个一个可观察序列
 
 ``` swift
-
 let disposeBag = DisposeBag()
-    
+
     Observable.from(["🐶", "🐱", "🐭", "🐹"])
         .subscribe(onNext: { print($0) })
         .disposed(by: disposeBag)
@@ -174,20 +171,18 @@ output:
 🐱
 🐭
 🐹
-
 ```
 
 #### range
 
 ##### 创建一个发出一系列顺序整数然后终止的序列
 
-*  Range方法其实方便版of方法，其功能和of差不多，我们只要输出start和count然后就能生成一组数据，让他们执行onNext
+* Range方法其实方便版of方法，其功能和of差不多，我们只要输出start和count然后就能生成一组数据，让他们执行onNext
 
 ``` swift
-
 let arr: [String] = ["ad", "cd", "ef", "gh"]
 let disposeBag = DisposeBag()
-    
+
     Observable.range(start: 1, count: 10)
         .subscribe { print($0) }
         .disposed(by: disposeBag)
@@ -196,7 +191,6 @@ output:
 cd
 ef
 gh
-
 ```
 
 #### repeatElement
@@ -208,9 +202,8 @@ gh
 * 这里的take(3)表示只取前3个元素
 
 ``` swift
-
 let disposeBag = DisposeBag()
-    
+
     Observable.repeatElement("🔴")
         .take(3)
         .subscribe(onNext: { print($0) })
@@ -220,7 +213,6 @@ output:
 🔴
 🔴
 🔴
-
 ```
 
 #### generate
@@ -229,17 +221,16 @@ output:
 
 * generate方法是一个迭代器，它一直循环onNext事件，直到condition不满足要求退出。
 * generate有四个参数：
-	1. 最开始的循环变量
-    2. 条件
-    3. 迭代器，这个迭代器每次运行都会返回一个E类型，作为下一次是否执行onNext事件源，而是否正的要执行则看是否满足condition条件
-    4. 调度器，可选参数，可以指定线程
+    1. 最开始的循环变量
+    1. 条件
+    1. 迭代器，这个迭代器每次运行都会返回一个E类型，作为下一次是否执行onNext事件源，而是否正的要执行则看是否满足condition条件
+    1. 调度器，可选参数，可以指定线程
 
 * 下面的例子：初始变量是0，满足条件，执行onNext方法，同时通过迭代器"$0+1"生成一个1，继续满足条件执行onNext方法，直到不满足条件停止
 
 ``` swift
-
 let disposeBag = DisposeBag()
-    
+
     Observable.generate(
             initialState: 0,
             condition: { $0 < 3 },
@@ -247,14 +238,12 @@ let disposeBag = DisposeBag()
         )
         .subscribe(onNext: { print($0) })
         .disposed(by: disposeBag)
-        
+
 output:
 0
 1
 2
-
 ```
-
 
 #### deferred
 
@@ -264,14 +253,13 @@ output:
 * 如果把后面两个订阅去掉的话，是不会有Creating输出的
 
 ``` swift
-
 let disposeBag = DisposeBag()
     var count = 1
-    
+
     let deferredSequence = Observable<String>.deferred {
         print("Creating \(count)")
         count += 1
-        
+
         return Observable.create { observer in
             print("Emitting...")
             observer.onNext("🐶")
@@ -280,15 +268,15 @@ let disposeBag = DisposeBag()
             return Disposables.create()
         }
     }
-    
+
     deferredSequence
         .subscribe(onNext: { print($0) })
         .disposed(by: disposeBag)
-    
+
     deferredSequence
         .subscribe(onNext: { print($0) })
         .disposed(by: disposeBag)
-        
+
 output:
 Creating 1
 Emitting...
@@ -300,7 +288,6 @@ Emitting...
 🐶
 🐱
 🐵
-
 ```
 
 #### error
@@ -310,7 +297,6 @@ Emitting...
 * error方法是返回一个只能调用onError方法的Observable序列。其中的onNext和OnComleted方法是不会执行的
 
 ``` swift
-
 Observable<String>
             .error(RxError.Timeout)
             .subscribe(
@@ -328,11 +314,10 @@ Observable<String>
                     print("dispose")
                 })
              .dispose()
-             
+
 output:
 Sequence timeout
 dispose
-
 ```
 
 #### doOn
@@ -343,14 +328,13 @@ dispose
 * 可以针对不同的事件类型单独拦截
 
 ``` swift
-
 let disposeBag = DisposeBag()
-    
+
     Observable.of("🍎", "🍐", "🍊", "🍋")
         .do(onNext: { print("Intercepted:", $0) }, onError: { print("Intercepted error:", $0) }, onCompleted: { print("Completed")  })
         .subscribe(onNext: { print($0) })
         .disposed(by: disposeBag)
-        
+
 output:
 Intercepted: 🍎
 🍎
@@ -361,7 +345,6 @@ Intercepted: 🍊
 Intercepted: 🍋
 🍋
 Completed
-
 ```
 
 ### 操作
@@ -375,9 +358,8 @@ Completed
 * 最后插入的元素数组在最前面
 
 ``` swift
-
 let disposeBag = DisposeBag()
-    
+
 Observable.of("🐶", "🐱", "🐭", "🐹")
     .startWith("1")
     .startWith("2")
@@ -395,7 +377,6 @@ output:
 🐱
 🐭
 🐹
-
 ```
 
 ##### merge
@@ -405,9 +386,8 @@ output:
 * 当其中某个序列发生了错误就会立即把错误发送到合并的序列并终止
 
 ``` swift
-
 let disposeBag = DisposeBag()
-    
+
 let subject1 = PublishSubject<String>()
 let subject2 = PublishSubject<String>()
 
@@ -415,7 +395,7 @@ Observable.of(subject1, subject2)
     .merge()
     .subscribe(onNext: { print($0) })
     .disposed(by: disposeBag)
-    
+
 subject1.onNext("🅰️")
 subject1.onNext("🅱️")
 subject2.onNext("①")
@@ -430,7 +410,6 @@ output:
 ②
 🆎
 ③
-
 ```
 
 ##### zip
@@ -440,9 +419,8 @@ output:
 * 但只有每一个序列都发射了一个值之后才会组合成一个新的值并发出来
 
 ``` swift
-
 let disposeBag = DisposeBag()
-    
+
 let stringSubject = PublishSubject<String>()
 let intSubject = PublishSubject<Int>()
 
@@ -451,7 +429,7 @@ Observable.zip(stringSubject, intSubject) { stringElement, intElement in
     }
     .subscribe(onNext: { print($0) })
     .disposed(by: disposeBag)
-    
+
 stringSubject.onNext("🅰️")
 stringSubject.onNext("🅱️")
 
@@ -465,7 +443,6 @@ output:
 🅰️ 1
 🅱️ 2
 🆎 3
-
 ```
 
 ##### combineLatest
@@ -473,9 +450,8 @@ output:
 ###### 获取两个序列的最新值，并通过某个函数对其进行处理，处理完之后返回一个新的发射值
 
 ``` swift
-
 let disposeBag = DisposeBag()
-    
+
 let stringSubject = PublishSubject<String>()
 let intSubject = PublishSubject<Int>()
 
@@ -484,7 +460,7 @@ Observable.combineLatest(stringSubject, intSubject) { stringElement, intElement 
     }
     .subscribe(onNext: { print($0) })
     .disposed(by: disposeBag)
-    
+
 stringSubject.onNext("🅰️")
 
 stringSubject.onNext("🅱️")
@@ -498,13 +474,11 @@ output:
 🅱️ 1
 🅱️ 2
 🆎 2
-
 ```
 
 * combineLatest还有一个变体可以接受一个数组，或者任何其他可被观察序列的集合。但是要求这些可被观察序列元素是同一类型
 
 ``` swift
-
 let disposeBag = DisposeBag()
 
 let stringObservable = Observable.just("❤️")
@@ -518,7 +492,7 @@ Observable.combineLatest([stringObservable, fruitObservable, animalObservable]) 
     }
     .subscribe(onNext: { print($0) })
     .disposed(by: disposeBag)
-    
+
 output:
 ❤️ 🍎 🐶
 ❤️ 🍐 🐶
@@ -526,7 +500,6 @@ output:
 ❤️ 🍊 🐱
 ❤️ 🍊 🐭
 ❤️ 🍊 🐹
-
 ```
 
 ##### switchLatest
@@ -534,13 +507,12 @@ output:
 ###### 每当一个新的序列发射时，原来序列将被丢弃
 
 ``` swift
-
 let disposeBag = DisposeBag()
-    
+
 let subject1 = BehaviorSubject(value: "⚽️")
 let subject2 = BehaviorSubject(value: "🍎")
 let variable = Variable(subject1)
-    
+
 variable.asObservable()
     .switchLatest()
     .subscribe(onNext: { print($0) })
@@ -560,7 +532,6 @@ output:
 🏀
 🍎
 🍐
-
 ```
 
 ##### sample
@@ -570,7 +541,6 @@ output:
 * 当收到目标事件，就会从源序列取一个最新的事件，发送到序列，如果两次目标事件之间没有源序列的事件，则不发射值
 
 ``` swift
-
 let source = PublishSubject<Int>()
 let target = PublishSubject<String>()
 
@@ -593,7 +563,6 @@ target.onNext("C")  //没有最新的source，不发射
 output:
 next(1)
 next(3)
-
 ```
 
 #### 转换操作
@@ -603,19 +572,17 @@ next(3)
 ###### 转换其中的每一个元素
 
 ``` swift
-
 let disposeBag = DisposeBag()
 
 Observable.of(1, 2, 3)
     .map { $0 * $0 }
     .subscribe(onNext: { print($0) })
     .disposed(by: disposeBag)
-    
+
 output:
 1
 4
 9
-
 ```
 
 ##### faltMap
@@ -625,9 +592,8 @@ output:
 * 把当前序列的元素转换成一个新的序列，并把他们合并成一个序列，这个在我们的一个可被观察者序列本身又会触发一个序列的时候非常有用，比如发送一个新的网络请求
 
 ``` swift
-
 let disposeBag = DisposeBag()
-    
+
 struct Player {
     var score: Variable<Int>
 }
@@ -641,7 +607,7 @@ player.asObservable()
     .flatMap { $0.score.asObservable() } 
     .subscribe(onNext: { print($0) })
     .disposed(by: disposeBag)
-    
+
 👦🏻.score.value = 85
 
 player.value = 👧🏼
@@ -656,9 +622,7 @@ output:
 90
 95
 100
-
 ```
-
 
 ##### flatMapLatest
 
@@ -673,21 +637,19 @@ output:
 ###### 给予一个初始值，依次对每个元素进行操作，最后返回操作的结果
 
 ``` swift
-
 let disposeBag = DisposeBag()
-    
+
 Observable.of(10, 100, 1000)
     .scan(1) { aggregateValue, newValue in
         aggregateValue + newValue
     }
     .subscribe(onNext: { print($0) })
     .disposed(by: disposeBag)
-    
+
 output:
 11
 111
 1111
-
 ```
 
 #### 过滤方法
@@ -697,9 +659,8 @@ output:
 ###### 过滤序列中符合指定条件的值
 
 ``` swift
-
 let disposeBag = DisposeBag()
-    
+
 Observable.of(
     "🐱", "🐰", "🐶",
     "🐸", "🐱", "🐰",
@@ -709,12 +670,11 @@ Observable.of(
     }
     .subscribe(onNext: { print($0) })
     .disposed(by: disposeBag)
-    
+
 output:
 🐱
 🐱
 🐱
-
 ```
 
 ##### distinctUntilChanged
@@ -722,21 +682,19 @@ output:
 ###### 过滤掉连续发射的重复元素。
 
 ``` swift
-
 let disposeBag = DisposeBag()
-    
+
 Observable.of("🐱", "🐷", "🐱", "🐱", "🐱", "🐵", "🐱")
     .distinctUntilChanged()
     .subscribe(onNext: { print($0) })
     .disposed(by: disposeBag)
-    
+
 output:
 🐱
 🐷
 🐱
 🐵
 🐱
-
 ```
 
 ##### elementAt
@@ -744,19 +702,16 @@ output:
 ###### 只发送指定位置的值
 
 ``` swift
-
 let disposeBag = DisposeBag()
-    
+
 Observable.of("🐱", "🐰", "🐶", "🐸", "🐷", "🐵")
     .elementAt(3)
     .subscribe(onNext: { print($0) })
     .disposed(by: disposeBag)
-    
+
 output:
 🐸
-
 ```
-
 
 ##### single
 
@@ -771,7 +726,7 @@ Observable.of("🐱", "🐰", "🐶", "🐸", "🐷", "🐵")
         .single()
         .subscribe(onNext: { print($0) })
         .disposed(by: disposeBag)
-        
+
 output:
 🐱
 Received unhandled error: /var/folders/h3/8n169g610_g69k50z7g_q4gc0000gp/T/./lldb/77046/playground61.swift:69:__lldb_expr_61 -> Sequence contains more than one element.
@@ -785,17 +740,17 @@ Observable.of("🐱", "🐰", "🐶", "🐸", "🐷", "🐵")
         .single { $0 == "🐸" }
         .subscribe { print($0) }
         .disposed(by: disposeBag)
-    
+
 Observable.of("🐱", "🐰", "🐶", "🐱", "🐰", "🐶")
     .single { $0 == "🐰" }
     .subscribe { print($0) }
     .disposed(by: disposeBag)
-    
+
 Observable.of("🐱", "🐰", "🐶", "🐸", "🐷", "🐵")
     .single { $0 == "🔵" }
     .subscribe { print($0) }
     .disposed(by: disposeBag)
-    
+
 output:
 next(🐸)
 completed
@@ -813,9 +768,8 @@ error(Sequence doesn't contain any elements.)
 ###### 获取序列前多少个值
 
 ``` swift
-
 let disposeBag = DisposeBag()
-    
+
 Observable.of("🐱", "🐰", "🐶", "🐸", "🐷", "🐵")
     .take(3)
     .subscribe(onNext: { print($0) })
@@ -826,7 +780,6 @@ output:
 🐱
 🐰
 🐶
-
 ```
 
 ##### takeLast
@@ -834,19 +787,17 @@ output:
 ###### 获取序列后多少个值
 
 ``` swift
-
 let disposeBag = DisposeBag()
-    
+
 Observable.of("🐱", "🐰", "🐶", "🐸", "🐷", "🐵")
     .takeLast(3)
     .subscribe(onNext: { print($0) })
     .disposed(by: disposeBag)
-    
+
 output:
 🐸
 🐷
 🐵
-
 ```
 
 ##### takeWhile
@@ -856,19 +807,17 @@ output:
 * 发射值直到条件变成false，变成false后，后面满足条件的值也不会发射
 
 ``` swift
-
 let disposeBag = DisposeBag()
-    
+
 Observable.of(1, 2, 3, 4, 5, 6，1，2)
     .takeWhile { $0 < 4 }
     .subscribe(onNext: { print($0) })
     .disposed(by: disposeBag)
-    
+
 output:
 1
 2
 3
-
 ```
 
 ##### takeUntil
@@ -876,9 +825,8 @@ output:
 ###### 发射原序列，直到新的序列发射了一个值
 
 ``` swift
-
 let disposeBag = DisposeBag()
-    
+
 let sourceSequence = PublishSubject<String>()
 let referenceSequence = PublishSubject<String>()
 
@@ -886,7 +834,7 @@ sourceSequence
     .takeUntil(referenceSequence)
     .subscribe { print($0) }
     .disposed(by: disposeBag)
-    
+
 sourceSequence.onNext("🐱")
 sourceSequence.onNext("🐰")
 sourceSequence.onNext("🐶")
@@ -902,7 +850,6 @@ next(🐱)
 next(🐰)
 next(🐶)
 completed
-
 ```
 
 ##### skip
@@ -911,18 +858,17 @@ completed
 
 ``` swift
 let disposeBag = DisposeBag()
-    
+
 Observable.of("🐱", "🐰", "🐶", "🐸", "🐷", "🐵")
     .skip(2)
     .subscribe(onNext: { print($0) })
     .disposed(by: disposeBag)
-    
+
 output:
 🐶
 🐸
 🐷
 🐵
-
 ```
 
 ##### skipWhile
@@ -932,21 +878,19 @@ output:
 * 跳过满足条件的值到条件变成false，变成false后，后面满足条件的值也不会跳过
 
 ``` swift
-
 let disposeBag = DisposeBag()
-    
+
 Observable.of(1, 2, 3, 4, 5, 6, 1, 2)
     .skipWhile { $0 < 4 }
     .subscribe(onNext: { print($0) })
     .disposed(by: disposeBag)
-    
+
 output:
 4
 5
 6
 1
 2
-
 ```
 
 ##### skipWhileWithIndex
@@ -954,21 +898,19 @@ output:
 ###### 和skipWhile类似，只不过带上了index
 
 ``` swift
-
 let disposeBag = DisposeBag()
-    
+
 Observable.of("🐱", "🐰", "🐶", "🐸", "🐷", "🐵")
     .skipWhileWithIndex { element, index in
         index < 3
     }
     .subscribe(onNext: { print($0) })
     .disposed(by: disposeBag)
-    
+
 output:
 🐸
 🐷
 🐵
-
 ```
 
 ##### skipUntil
@@ -976,9 +918,8 @@ output:
 ###### 和takeUntil相反，跳过原序列，直到新序列发射了一个值
 
 ``` swift
-
 let disposeBag = DisposeBag()
-    
+
 let sourceSequence = PublishSubject<String>()
 let referenceSequence = PublishSubject<String>()
 
@@ -986,7 +927,7 @@ sourceSequence
     .skipUntil(referenceSequence)
     .subscribe(onNext: { print($0) })
     .disposed(by: disposeBag)
-    
+
 sourceSequence.onNext("🐱")
 sourceSequence.onNext("🐰")
 sourceSequence.onNext("🐶")
@@ -998,7 +939,6 @@ output:
 🐸
 🐷
 🐵
-
 ```
 
 #### 聚合操作
@@ -1008,9 +948,8 @@ output:
 ###### 把一个序列转成一个数组，然后作为新的一个值发射
 
 ``` swift
-
 let disposeBag = DisposeBag()
-    
+
 Observable.range(start: 1, count: 10)
     .toArray()
     .subscribe { print($0) }
@@ -1019,7 +958,6 @@ Observable.range(start: 1, count: 10)
 output:
 next([1, 2, 3, 4, 5, 6, 7, 8, 9, 10])
 completed
-
 ```
 
 ##### reduce
@@ -1027,9 +965,8 @@ completed
 ###### 给一个初始值，然后和序列里的每个值进行运行，最后返回一个结果，然后把结果作为单个值发射出去
 
 ``` swift
-
 let disposeBag = DisposeBag()
-    
+
 Observable.of(10, 100, 1000)
     .reduce(1, accumulator: +)
     .subscribe(onNext: { print($0) })
@@ -1037,7 +974,6 @@ Observable.of(10, 100, 1000)
 
 output:
 1111
-
 ```
 
 ##### concat
@@ -1045,9 +981,8 @@ output:
 ###### 串联多个序列，下一个序列必须等前一个序列完成才会发射出来
 
 ``` swift
-
 let disposeBag = DisposeBag()
-    
+
 let subject1 = BehaviorSubject(value: "🍎")
 let subject2 = BehaviorSubject(value: "🐶")
 
@@ -1057,7 +992,7 @@ variable.asObservable()
     .concat()
     .subscribe { print($0) }
     .disposed(by: disposeBag)
-    
+
 subject1.onNext("🍐")
 subject1.onNext("🍊")
 
@@ -1076,7 +1011,6 @@ next(🍐)
 next(🍊)
 next(🐱)
 next(🐭)
-
 ```
 
 #### 连接操作
@@ -1085,14 +1019,13 @@ next(🐭)
 
 ###### 把一个序列转成一个可连接的序列
 
-**http://www.alonemonkey.com/2017/03/24/rxswift-part-three/**
+参考：<http://www.alonemonkey.com/2017/03/24/rxswift-part-three/>
 
 ##### replay
 
 ###### 把源序列转换可连接的序列，并会给新的订阅者发送之前bufferSize个的值
 
 ``` swift
-
 let intSequence = Observable<Int>.interval(1, scheduler: MainScheduler.instance)
         .replay(5)
 
@@ -1132,7 +1065,6 @@ Subscription 3:, Event: 2     //之前发射的值
 Subscription 1:, Event: 3
 Subscription 2:, Event: 3
 Subscription 3:, Event: 3
-
 ```
 
 ##### multicast
@@ -1140,12 +1072,11 @@ Subscription 3:, Event: 3
 ###### 传入一个Subject，每当序列发射都会触发这个Subject的发射
 
 ``` swift
-
 let subject = PublishSubject<Int>()
-    
+
 _ = subject
     .subscribe(onNext: { print("Subject: \($0)") })
-    
+
 let intSequence = Observable<Int>.interval(1, scheduler: MainScheduler.instance)
     .multicast(subject)
 
@@ -1166,18 +1097,17 @@ delay(6) {
 
 output:
 Subject: 0
-	Subscription 1:, Event: 0
+    Subscription 1:, Event: 0
 Subject: 1
-	Subscription 1:, Event: 1
-	Subscription 2:, Event: 1
+    Subscription 1:, Event: 1
+    Subscription 2:, Event: 1
 Subject: 2
-	Subscription 1:, Event: 2
-	Subscription 2:, Event: 2
+    Subscription 1:, Event: 2
+    Subscription 2:, Event: 2
 Subject: 3
-	Subscription 1:, Event: 3
-	Subscription 2:, Event: 3
-	Subscription 3:, Event: 3
-
+    Subscription 1:, Event: 3
+    Subscription 2:, Event: 3
+    Subscription 3:, Event: 3
 ```
 
 #### 错误操作
@@ -1187,9 +1117,8 @@ Subject: 3
 ###### 捕获到错误的时候，返回指定的值，然后终止
 
 ``` swift
-
 let disposeBag = DisposeBag()
-    
+
 let sequenceThatFails = PublishSubject<String>()
 
 sequenceThatFails
@@ -1210,7 +1139,6 @@ next(😡)
 next(🔴)
 next(😊)
 completed
-
 ```
 
 ##### catchError
@@ -1218,8 +1146,7 @@ completed
 ###### 捕获一个错误值，然后切换到新的序列
 
 ``` swift
-
-let disposeBag = DisposeBag()  
+let disposeBag = DisposeBag()
 
 let sequenceThatFails = PublishSubject<String>()
 
@@ -1247,7 +1174,6 @@ next(😡)
 next(🔴)
 Error: test
 next(😊)
-
 ```
 
 ##### retry
@@ -1257,29 +1183,28 @@ next(😊)
 * retry(_:) 表示最多重试多少次。 retry(3)
 
 ``` swift
-
 let disposeBag = DisposeBag()
     var count = 1
-    
+
     let sequenceThatErrors = Observable<String>.create { observer in
         observer.onNext("🍎")
         observer.onNext("🍐")
         observer.onNext("🍊")
-        
+
         if count == 1 {
             observer.onError(TestError.test)
             print("Error encountered")
             count += 1
         }
-        
+
         observer.onNext("🐶")
         observer.onNext("🐱")
         observer.onNext("🐭")
         observer.onCompleted()
-        
+
         return Disposables.create()
     }
-    
+
     sequenceThatErrors
         .retry()
         .subscribe(onNext: { print($0) })
@@ -1296,7 +1221,6 @@ Error encountered
 🐶
 🐱
 🐭
-
 ```
 
 #### 调试操作
@@ -1306,7 +1230,6 @@ Error encountered
 ###### 打印所有的订阅者、事件、和处理
 
 ``` swift
-
 let disposeBag = DisposeBag()
 
 var count = 1
@@ -1315,18 +1238,18 @@ let sequenceThatErrors = Observable<String>.create { observer in
     observer.onNext("🍎")
     observer.onNext("🍐")
     observer.onNext("🍊")
-    
+
     if count < 5 {
         observer.onError(TestError.test)
         print("Error encountered")
         count += 1
     }
-    
+
     observer.onNext("🐶")
     observer.onNext("🐱")
     observer.onNext("🐭")
     observer.onCompleted()
-    
+
     return Disposables.create()
 }
 
@@ -1362,7 +1285,6 @@ Error encountered
 2017-03-25 12:38:47.255: playground157.swift:42 (__lldb_expr_157) -> Event error(test)
 Received unhandled error: /var/folders/h3/8n169g610_g69k50z7g_q4gc0000gp/T/./lldb/26516/playground157.swift:43:__lldb_expr_157 -> test
 2017-03-25 12:38:47.283: playground157.swift:42 (__lldb_expr_157) -> isDisposed
-
 ```
 
 ##### RxSwift.Resources.total
@@ -1372,9 +1294,8 @@ Received unhandled error: /var/folders/h3/8n169g610_g69k50z7g_q4gc0000gp/T/./lld
 * 在检查内存泄露的时候非常有用
 
 ``` swift
-
 print(RxSwift.Resources.total)
-    
+
 let disposeBag = DisposeBag()
 
 print(RxSwift.Resources.total)
@@ -1406,7 +1327,6 @@ output:
 10
 9
 8
-
 ```
 
 ## Subscribe
@@ -1452,7 +1372,7 @@ subject.onNext("🐱")
 subject.addObserver("2").disposed(by: disposeBag)
 subject.onNext("🅰️")
 subject.onNext("🅱️")
-    
+
 output:
 Subscription: 1 Event: next(🐶)
 Subscription: 1 Event: next(🐱)
