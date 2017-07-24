@@ -5,14 +5,14 @@
 # Site
 title: 墙里墙外
 subtitle:
-description: something crossed my mind
+description: Someone crossed my mind
 author: Void
 language: zh-Hans
 timezone:
 
 # URL
 ## If your site is put in a subdirectory, set url as 'http://yoursite.com/child' and root as '/child/'
-url: http://yoursite.com
+url: http://walled.men
 root: /
 permalink: :year/:month/:day/:title/
 permalink_defaults:
