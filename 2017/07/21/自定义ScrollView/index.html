@@ -102,7 +102,7 @@
 <meta property="og:description" content="UIScrollView 是iOS Cocoa框架中重要的控件，几乎每个APP中都会用到，所以使用它，是对每个iOS开发者最基本的要求。 本文试图去了解UIScrollView它的工作原理，并且尝试去自定义一个ScrollView，同时解决多层ScrollView嵌套时的手势连贯性问题：  了解UIScrollView 自定义ScrollView 添加必要的动画效果 解决ScrollView嵌套U">
 <meta property="og:image" content="http://walled.men/2017/07/21/自定义ScrollView/盗图1.png">
 <meta property="og:image" content="http://walled.men/2017/07/21/自定义ScrollView/盗图2.png">
-<meta property="og:updated_time" content="2017-07-21T08:25:08.000Z">
+<meta property="og:updated_time" content="2017-07-24T06:42:28.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="自定义ScrollView">
 <meta name="twitter:description" content="UIScrollView 是iOS Cocoa框架中重要的控件，几乎每个APP中都会用到，所以使用它，是对每个iOS开发者最基本的要求。 本文试图去了解UIScrollView它的工作原理，并且尝试去自定义一个ScrollView，同时解决多层ScrollView嵌套时的手势连贯性问题：  了解UIScrollView 自定义ScrollView 添加必要的动画效果 解决ScrollView嵌套U">
@@ -382,12 +382,12 @@
 <p>边界矩形，在自己的坐标系中描述视图的位置和大小。</p>
 </blockquote>
 <p>一般来说 <code>view</code> 的 <code>bounds</code> 原点默认是（0，0），比如iPhone4的尺寸（320，480），在iPhone4上新建一个view ：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="built_in">let</span> view = UIView(frame: CGRect(x: 0, y: 0,width: 320, height: 1000))</div></pre></td></tr></table></figure>
+<figure class="highlight swift"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">let</span> view = <span class="type">UIView</span>(frame: <span class="type">CGRect</span>(x: <span class="number">0</span>, y: <span class="number">0</span>,width: <span class="number">320</span>, height: <span class="number">1000</span>))</div></pre></td></tr></table></figure>
 <p>view的高度明显超出屏幕的高度，所以屏幕内并不能完全显示view，只能展示480，所以应该是view竖直方向 <code>0 ~ 480</code> 之间的内容</p>
 <p>我们看到的效果应该是</p>
 <img src="/2017/07/21/自定义ScrollView/盗图1.png" alt="盗图" title="盗图">
 <p>这时如果我们修改 <code>view</code> 的 <code>bounds</code> ：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">var bounds = view.bounds</div><div class="line">bounds.origin = CGPoint(x: 0, y: 100)</div><div class="line">view.bounds = bounds</div></pre></td></tr></table></figure>
+<figure class="highlight swift"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">var</span> bounds = view.bounds</div><div class="line">bounds.origin = <span class="type">CGPoint</span>(x: <span class="number">0</span>, y: <span class="number">100</span>)</div><div class="line">view.bounds = bounds</div></pre></td></tr></table></figure>
 <p>这时屏幕内展示的view内容应该是竖直方向 <code>100 ~ 580</code>之间的内容，看起来view向下移动了100，但是实际上这只是相对于它自己的坐标，它的 <code>frame</code> 并没有改变。</p>
 <img src="/2017/07/21/自定义ScrollView/盗图2.png" alt="盗图" title="盗图">
 <p>如果你能理解这些，那你会发现，改变视图的 <code>bounds</code> 类似 <code>UIScrollView</code> 的 <code>contentOffset</code>。</p>
