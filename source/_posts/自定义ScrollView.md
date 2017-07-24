@@ -24,7 +24,7 @@ UIScrollView 是iOS Cocoa框架中重要的控件，几乎每个APP中都会用�
 
 一般来说 `view` 的 `bounds` 原点默认是（0，0），比如iPhone4的尺寸（320，480），在iPhone4上新建一个view ：
 
-``` bash
+``` swift
 let view = UIView(frame: CGRect(x: 0, y: 0,width: 320, height: 1000))
 ```
 
@@ -36,7 +36,7 @@ view的高度明显超出屏幕的高度，所以屏幕内并不能完全显示v
 
 这时如果我们修改 `view` 的 `bounds` ：
 
-``` bash
+``` swift
 var bounds = view.bounds
 bounds.origin = CGPoint(x: 0, y: 100)
 view.bounds = bounds

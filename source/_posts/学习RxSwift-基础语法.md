@@ -16,8 +16,7 @@ categories: RxSwift
 
 ##### 相当于clone方法，也就是说必须先有Observable对象才能调用asObservable方法。
 
-```
-
+``` swift
 var obs = Observable<String>.create { (observer) -> Disposable in
   observer.on(.Next("hahah"))
   observer.on(.Next("deasd"))
@@ -31,15 +30,13 @@ observable.subscribeOn(MainScheduler.instance)
 .subscribe{ event in
   print(event.debugDescription)
 }
-
 ```
 
 #### create
 
 ##### 最基本创建方式
 
-```
-
+``` swift
 let disposeBag = DisposeBag()
 
 //创建
@@ -57,15 +54,13 @@ observable.subscribe { print($0) }
 output:
 next(😬)
 completed
-
-```
+``` 
 
 #### never
 
 ##### 创建一个序列，不会终止也不会发出任何事件
 
-```
-
+``` swift
 let disposeBag = DisposeBag()
 let neverSequence = Observable<String>.never()
 
@@ -75,15 +70,13 @@ print("This will never be printed")
 }
 
 neverSequenceSubscription.disposed(by: disposeBag)
-
 ```
 
 #### empty
 
 ##### 创建一个空的序列，只会发出一个完成事件
 
-```
-
+``` swift
 let obs1 = Observable<String>.empty()
        
 obs1.subscribe(
@@ -104,8 +97,7 @@ obs1.subscribe(
 output:    
 completed
 dispose 
-
-```
+``` 
 
 #### just
 
@@ -113,8 +105,7 @@ dispose
 
 * 使用just方法不能将一组数据一起处理，只能一个一个处理
 
-```
-
+``` swift
 let disposeBag = DisposeBag()
     
     Observable.just("🔴")
@@ -126,22 +117,19 @@ let disposeBag = DisposeBag()
 output:    
 next(🔴)
 completed
-
 ```
 
 ##### just方法是一个多态方法，允许在传入参数时候指定线程
 
 * 指定当前线程完成subscribe相关事件
 
-```
-
+``` swift
 Observable<String>
      .just("just with Scheduler", scheduler: CurrentThreadScheduler.instance)
      .subscribeNext({ (str) -> Void in
                 print(str)
      })
      .dispose()
-
 ```
 
 #### of
@@ -150,7 +138,7 @@ Observable<String>
 
 * just的升级版，同样存在一个多态方法，可以带入线程控制
 
-```
+``` swift
 
 let disposeBag = DisposeBag()
     
@@ -174,7 +162,7 @@ output:
 
 * 就是将一个Array变成一个一个可观察序列
 
-```
+``` swift
 
 let disposeBag = DisposeBag()
     
@@ -195,7 +183,7 @@ output:
 
 *  Range方法其实方便版of方法，其功能和of差不多，我们只要输出start和count然后就能生成一组数据，让他们执行onNext
 
-```
+``` swift
 
 let arr: [String] = ["ad", "cd", "ef", "gh"]
 let disposeBag = DisposeBag()
@@ -219,7 +207,7 @@ gh
 * 这种循环是可以指定线程的
 * 这里的take(3)表示只取前3个元素
 
-```
+``` swift
 
 let disposeBag = DisposeBag()
     
@@ -248,7 +236,7 @@ output:
 
 * 下面的例子：初始变量是0，满足条件，执行onNext方法，同时通过迭代器"$0+1"生成一个1，继续满足条件执行onNext方法，直到不满足条件停止
 
-```
+``` swift
 
 let disposeBag = DisposeBag()
     
@@ -275,7 +263,7 @@ output:
 * deferred不是第一步创建Observable，而是在subscriber的时候创建的
 * 如果把后面两个订阅去掉的话，是不会有Creating输出的
 
-```
+``` swift
 
 let disposeBag = DisposeBag()
     var count = 1
@@ -321,7 +309,7 @@ Emitting...
 
 * error方法是返回一个只能调用onError方法的Observable序列。其中的onNext和OnComleted方法是不会执行的
 
-```
+``` swift
 
 Observable<String>
             .error(RxError.Timeout)
@@ -354,7 +342,7 @@ dispose
 * 相当于一个拦截器，但是只能拦截不能修改
 * 可以针对不同的事件类型单独拦截
 
-```
+``` swift
 
 let disposeBag = DisposeBag()
     
@@ -386,7 +374,7 @@ Completed
 
 * 最后插入的元素数组在最前面
 
-```
+``` swift
 
 let disposeBag = DisposeBag()
     
@@ -416,7 +404,7 @@ output:
 
 * 当其中某个序列发生了错误就会立即把错误发送到合并的序列并终止
 
-```
+``` swift
 
 let disposeBag = DisposeBag()
     
@@ -451,7 +439,7 @@ output:
 
 * 但只有每一个序列都发射了一个值之后才会组合成一个新的值并发出来
 
-```
+``` swift
 
 let disposeBag = DisposeBag()
     
@@ -484,7 +472,7 @@ output:
 
 ###### 获取两个序列的最新值，并通过某个函数对其进行处理，处理完之后返回一个新的发射值
 
-```
+``` swift
 
 let disposeBag = DisposeBag()
     
@@ -515,7 +503,7 @@ output:
 
 * combineLatest还有一个变体可以接受一个数组，或者任何其他可被观察序列的集合。但是要求这些可被观察序列元素是同一类型
 
-```
+``` swift
 
 let disposeBag = DisposeBag()
 
@@ -541,15 +529,11 @@ output:
 
 ```
 
-
-
-
-
 ##### switchLatest
 
 ###### 每当一个新的序列发射时，原来序列将被丢弃
 
-```
+``` swift
 
 let disposeBag = DisposeBag()
     
@@ -585,7 +569,7 @@ output:
 
 * 当收到目标事件，就会从源序列取一个最新的事件，发送到序列，如果两次目标事件之间没有源序列的事件，则不发射值
 
-```
+``` swift
 
 let source = PublishSubject<Int>()
 let target = PublishSubject<String>()
@@ -618,7 +602,7 @@ next(3)
 
 ###### 转换其中的每一个元素
 
-```
+``` swift
 
 let disposeBag = DisposeBag()
 
@@ -640,7 +624,7 @@ output:
 
 * 把当前序列的元素转换成一个新的序列，并把他们合并成一个序列，这个在我们的一个可被观察者序列本身又会触发一个序列的时候非常有用，比如发送一个新的网络请求
 
-```
+``` swift
 
 let disposeBag = DisposeBag()
     
@@ -688,7 +672,7 @@ output:
 
 ###### 给予一个初始值，依次对每个元素进行操作，最后返回操作的结果
 
-```
+``` swift
 
 let disposeBag = DisposeBag()
     
@@ -712,7 +696,7 @@ output:
 
 ###### 过滤序列中符合指定条件的值
 
-```
+``` swift
 
 let disposeBag = DisposeBag()
     
@@ -737,7 +721,7 @@ output:
 
 ###### 过滤掉连续发射的重复元素。
 
-```
+``` swift
 
 let disposeBag = DisposeBag()
     
@@ -759,7 +743,7 @@ output:
 
 ###### 只发送指定位置的值
 
-```
+``` swift
 
 let disposeBag = DisposeBag()
     
@@ -780,7 +764,7 @@ output:
 
 * 如果有多个元素或者没有元素都会抛出错误
 
-```
+``` swift
 // 错误示例:
 
 Observable.of("🐱", "🐰", "🐶", "🐸", "🐷", "🐵")
@@ -796,7 +780,7 @@ Received unhandled error: /var/folders/h3/8n169g610_g69k50z7g_q4gc0000gp/T/./lld
 
 * 如果这里只有一个元素，则不会报错
 
-```
+``` swift
 Observable.of("🐱", "🐰", "🐶", "🐸", "🐷", "🐵")
         .single { $0 == "🐸" }
         .subscribe { print($0) }
@@ -828,7 +812,7 @@ error(Sequence doesn't contain any elements.)
 
 ###### 获取序列前多少个值
 
-```
+``` swift
 
 let disposeBag = DisposeBag()
     
@@ -849,7 +833,7 @@ output:
 
 ###### 获取序列后多少个值
 
-```
+``` swift
 
 let disposeBag = DisposeBag()
     
@@ -871,7 +855,7 @@ output:
 
 * 发射值直到条件变成false，变成false后，后面满足条件的值也不会发射
 
-```
+``` swift
 
 let disposeBag = DisposeBag()
     
@@ -891,7 +875,7 @@ output:
 
 ###### 发射原序列，直到新的序列发射了一个值
 
-```
+``` swift
 
 let disposeBag = DisposeBag()
     
@@ -925,7 +909,7 @@ completed
 
 ###### 跳过开头指定个数的值
 
-```
+``` swift
 let disposeBag = DisposeBag()
     
 Observable.of("🐱", "🐰", "🐶", "🐸", "🐷", "🐵")
@@ -947,7 +931,7 @@ output:
 
 * 跳过满足条件的值到条件变成false，变成false后，后面满足条件的值也不会跳过
 
-``` 
+``` swift
 
 let disposeBag = DisposeBag()
     
@@ -969,7 +953,7 @@ output:
 
 ###### 和skipWhile类似，只不过带上了index
 
-```
+``` swift
 
 let disposeBag = DisposeBag()
     
@@ -991,7 +975,7 @@ output:
 
 ###### 和takeUntil相反，跳过原序列，直到新序列发射了一个值
 
-```
+``` swift
 
 let disposeBag = DisposeBag()
     
@@ -1023,7 +1007,7 @@ output:
 
 ###### 把一个序列转成一个数组，然后作为新的一个值发射
 
-```
+``` swift
 
 let disposeBag = DisposeBag()
     
@@ -1042,7 +1026,7 @@ completed
 
 ###### 给一个初始值，然后和序列里的每个值进行运行，最后返回一个结果，然后把结果作为单个值发射出去
 
-```
+``` swift
 
 let disposeBag = DisposeBag()
     
@@ -1060,7 +1044,7 @@ output:
 
 ###### 串联多个序列，下一个序列必须等前一个序列完成才会发射出来
 
-```
+``` swift
 
 let disposeBag = DisposeBag()
     
@@ -1107,7 +1091,7 @@ next(🐭)
 
 ###### 把源序列转换可连接的序列，并会给新的订阅者发送之前bufferSize个的值
 
-```
+``` swift
 
 let intSequence = Observable<Int>.interval(1, scheduler: MainScheduler.instance)
         .replay(5)
@@ -1155,7 +1139,7 @@ Subscription 3:, Event: 3
 
 ###### 传入一个Subject，每当序列发射都会触发这个Subject的发射
 
-```
+``` swift
 
 let subject = PublishSubject<Int>()
     
@@ -1202,7 +1186,7 @@ Subject: 3
 
 ###### 捕获到错误的时候，返回指定的值，然后终止
 
-```
+``` swift
 
 let disposeBag = DisposeBag()
     
@@ -1233,7 +1217,7 @@ completed
 
 ###### 捕获一个错误值，然后切换到新的序列
 
-```
+``` swift
 
 let disposeBag = DisposeBag()  
 
@@ -1272,7 +1256,7 @@ next(😊)
 
 * retry(_:) 表示最多重试多少次。 retry(3)
 
-```
+``` swift
 
 let disposeBag = DisposeBag()
     var count = 1
@@ -1321,7 +1305,7 @@ Error encountered
 
 ###### 打印所有的订阅者、事件、和处理
 
-```
+``` swift
 
 let disposeBag = DisposeBag()
 
@@ -1387,7 +1371,7 @@ Received unhandled error: /var/folders/h3/8n169g610_g69k50z7g_q4gc0000gp/T/./lld
 
 * 在检查内存泄露的时候非常有用
 
-```
+``` swift
 
 print(RxSwift.Resources.total)
     
@@ -1427,16 +1411,15 @@ output:
 
 ## Subscribe
 
-````
 可以使用subscribe(onNext:) 或者 subscribe(_:)，通过前面一种方式来订阅某个事件，可以只订阅其中某个，而不用全部订阅
 
+```` swift
 someObservable.subscribe(
     onNext: { print("Element:", $0) },
     onError: { print("Error:", $0) },
     onCompleted: { print("Completed") },
     onDisposed: { print("Disposed") }
 )
-
 ````
 
 ### .onNext(element)
@@ -1458,8 +1441,7 @@ someObservable.subscribe(
 * 如果要保证所有事件都能被订阅到，可以使用Create主动创建或使用ReplaySubject
 * 如果被观察者因为错误被终止，PublishSubject只会发出一个错误的通知
 
-```
-
+``` swift
 let disposeBag = DisposeBag()
 let subject = PublishSubject<String>()
 
@@ -1478,15 +1460,13 @@ Subscription: 1 Event: next(🅰️)
 Subscription: 2 Event: next(🅰️)
 Subscription: 1 Event: next(🅱️)
 Subscription: 2 Event: next(🅱️)
-
 ```
 
 ### ReplaySubject
 
 #### 不管订阅者什么时候订阅的都可以把所有发生过的事件发送给订阅者
 
-```
-
+``` swift
 let disposeBag = DisposeBag()
 let subject = ReplaySubject<String>.createUnbounded()
 
@@ -1511,15 +1491,13 @@ Subscription: 2 Event: next(🅱️)
 // 当然你也指定重发事件的缓冲区大小，比如上面的例子如果这样创建：
 let subject = ReplaySubject<String>.create(bufferSize: 1)
 // 指定缓冲区大小为1，那么订阅者2就不会收到🐶了
-
 ```
 
 ### BehaviorSubject
 
 #### 广播所有事件给订阅者，对于新的订阅者，广播最近的一个事件或者默认值
 
-```
-
+``` swift
 let disposeBag = DisposeBag()
 let subject = BehaviorSubject(value: "🔴")
 
@@ -1551,7 +1529,6 @@ Subscription: 3 Event: next(🍐)
 Subscription: 1 Event: next(🍊)
 Subscription: 2 Event: next(🍊)
 Subscription: 3 Event: next(🍊)
-
 ```
 
 ### Variable
@@ -1560,8 +1537,7 @@ Subscription: 3 Event: next(🍊)
 
 * 它和BehaviorSubject不同之处在于，不能向Variable发送.Complete和.Error，它会在生命周期结束被释放的时候自动发送.Complete
 
-```
-
+``` swift
 let disposeBag = DisposeBag()
 let variable = Variable("🔴")
 
@@ -1584,5 +1560,4 @@ Subscription: 1 Event: next(🅱️)
 Subscription: 2 Event: next(🅱️)
 Subscription: 1 Event: completed
 Subscription: 2 Event: completed
-
 ```
