@@ -1,0 +1,743 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.1" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="Hexo, NexT" />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.1" />
+
+
+
+
+
+
+<meta name="description" content="MoyaMoya 是什么？ 一种基于 Alamofire 封装的网络抽象层库。使用 Moya 可以很方便快捷的实现一个 Swift 项目的网络请求 Router。 根据 Moya GitHub 提供的文档，我们可以很方便的了解它和 Alamofire 的关系：  RxSwift响应式编程框架，这里不做过多解释，可以去看官方文档 GitHub 或者我的另一篇 博客 。因为 Moya 原生的支持 R">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Moya + RxSwift + HandyJSON 实现函数式网络请求">
+<meta property="og:url" content="http://walled.men/2017/07/27/Moya-RxSwift-HandyJSON-实现函数式网络请求/index.html">
+<meta property="og:site_name" content="墙里墙外">
+<meta property="og:description" content="MoyaMoya 是什么？ 一种基于 Alamofire 封装的网络抽象层库。使用 Moya 可以很方便快捷的实现一个 Swift 项目的网络请求 Router。 根据 Moya GitHub 提供的文档，我们可以很方便的了解它和 Alamofire 的关系：  RxSwift响应式编程框架，这里不做过多解释，可以去看官方文档 GitHub 或者我的另一篇 博客 。因为 Moya 原生的支持 R">
+<meta property="og:image" content="http://walled.men/2017/07/27/Moya-RxSwift-HandyJSON-实现函数式网络请求/moya1.png">
+<meta property="og:updated_time" content="2017-07-27T09:45:44.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Moya + RxSwift + HandyJSON 实现函数式网络请求">
+<meta name="twitter:description" content="MoyaMoya 是什么？ 一种基于 Alamofire 封装的网络抽象层库。使用 Moya 可以很方便快捷的实现一个 Swift 项目的网络请求 Router。 根据 Moya GitHub 提供的文档，我们可以很方便的了解它和 Alamofire 的关系：  RxSwift响应式编程框架，这里不做过多解释，可以去看官方文档 GitHub 或者我的另一篇 博客 。因为 Moya 原生的支持 R">
+<meta name="twitter:image" content="http://walled.men/2017/07/27/Moya-RxSwift-HandyJSON-实现函数式网络请求/moya1.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    sidebar: {"position":"left","display":"hide","offset":12,"offset_float":0,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://walled.men/2017/07/27/Moya-RxSwift-HandyJSON-实现函数式网络请求/"/>
+
+
+
+
+
+  <title>Moya + RxSwift + HandyJSON 实现函数式网络请求 | 墙里墙外</title>
+  
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "//tajs.qq.com/stats?sId=63067043";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">墙里墙外</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="http://walled.men/2017/07/27/Moya-RxSwift-HandyJSON-实现函数式网络请求/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Void">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/uploads/huyang.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="墙里墙外">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Moya + RxSwift + HandyJSON 实现函数式网络请求</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-07-27T16:33:06+08:00">
+                2017-07-27
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+            <span class="post-meta-divider">|</span>
+            <span class="page-pv"><i class="fa fa-file-o"></i> 浏览
+            <span class="busuanzi-value" id="busuanzi_value_page_pv" ></span>次
+            </span>
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="Moya"><a href="#Moya" class="headerlink" title="Moya"></a>Moya</h1><p><code>Moya</code> 是什么？</p>
+<p>一种基于 <code>Alamofire</code> 封装的网络抽象层库。使用 <code>Moya</code> 可以很方便快捷的实现一个 <code>Swift</code> 项目的网络请求 <code>Router</code>。</p>
+<p>根据 <code>Moya</code> <a href="https://github.com/Moya/Moya" target="_blank" rel="external">GitHub</a> 提供的文档，我们可以很方便的了解它和 <code>Alamofire</code> 的关系：</p>
+<img src="/2017/07/27/Moya-RxSwift-HandyJSON-实现函数式网络请求/moya1.png" alt="Moya" title="Moya">
+<h1 id="RxSwift"><a href="#RxSwift" class="headerlink" title="RxSwift"></a>RxSwift</h1><p>响应式编程框架，这里不做过多解释，可以去看官方文档 <a href="https://github.com/ReactiveX/RxSwift" target="_blank" rel="external">GitHub</a> 或者我的另一篇 <a href="http://www.walled.men/2017/07/14/%E5%AD%A6%E4%B9%A0RxSwift-%E5%9F%BA%E7%A1%80%E8%AF%AD%E6%B3%95/" target="_blank" rel="external">博客</a> 。<br>因为 <code>Moya</code> 原生的支持 <code>RxSwift</code> ，更方便了我们去使用它</p>
+<h1 id="HandyJSON"><a href="#HandyJSON" class="headerlink" title="HandyJSON"></a>HandyJSON</h1><p>阿里巴巴开源的 <code>Swift</code> 版本 <code>JSON To Model</code> 解析工具。这里使用它，仅仅是作为一个工具来分析 <code>Moya</code> 的实用性。<br><code>Demo</code> 中可以把 <code>HandyJSON</code> 替换成 <code>ObjectMapper</code> 或者 <code>SwiftyJSON</code>，都没有问题</p>
+<h1 id="Moya的实际使用分析"><a href="#Moya的实际使用分析" class="headerlink" title="Moya的实际使用分析"></a>Moya的实际使用分析</h1><h2 id="基本使用"><a href="#基本使用" class="headerlink" title="基本使用"></a>基本使用</h2><p>使用 <code>Moya</code> 创建网络请求，我们需要遵守它的 <code>TargetType</code> 协议。而<code>Swift</code> 强大的 <code>enum</code> 功能，可以让我们很方便的创建一个网络请求的 <code>Router</code> 。</p>
+<figure class="highlight swift"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div></pre></td><td class="code"><pre><div class="line"><span class="class"><span class="keyword">enum</span> <span class="title">MoyaApi</span> </span>&#123;</div><div class="line">    <span class="keyword">case</span> threadList(mod: <span class="type">String</span>, page: <span class="type">String</span>)</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="class"><span class="keyword">extension</span> <span class="title">MoyaApi</span>: <span class="title">TargetType</span> </span>&#123;</div><div class="line"></div><div class="line">    <span class="keyword">var</span> baseURL: <span class="type">URL</span> &#123;</div><div class="line">        <span class="keyword">return</span> <span class="type">URL</span>(string: <span class="type">Moya_baseURL</span>)!</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="comment">/// 要附加到`baseURL'后以形成完整的URL的路径</span></div><div class="line">    <span class="keyword">var</span> path: <span class="type">String</span> &#123;</div><div class="line">        <span class="keyword">switch</span> <span class="keyword">self</span> &#123;</div><div class="line">        <span class="keyword">case</span> .threadList:</div><div class="line">            <span class="keyword">return</span> <span class="string">"/api.php"</span></div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="comment">/// 请求中使用的HTTP方法</span></div><div class="line">    <span class="keyword">var</span> method: <span class="type">Moya</span>.<span class="type">Method</span> &#123;</div><div class="line">        <span class="keyword">return</span> .<span class="keyword">get</span></div><div class="line">    &#125;</div><div class="line"></div><div class="line"></div><div class="line">    <span class="comment">/// 请求中要编码的参数</span></div><div class="line">    <span class="keyword">var</span> parameters: [<span class="type">String</span> : <span class="type">Any</span>]? &#123;</div><div class="line">        <span class="keyword">switch</span> <span class="keyword">self</span> &#123;</div><div class="line">        <span class="keyword">case</span> .threadList(<span class="keyword">let</span> mod, <span class="keyword">let</span> page):</div><div class="line">            <span class="keyword">var</span> p = [<span class="type">String</span>: <span class="type">Any</span>]()</div><div class="line">            p[<span class="string">"mod"</span>] = mod</div><div class="line">            p[<span class="string">"page"</span>] = page</div><div class="line">            <span class="keyword">return</span> p</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="comment">/// 用于参数编码的方法</span></div><div class="line">    <span class="keyword">var</span> parameterEncoding: <span class="type">ParameterEncoding</span> &#123;</div><div class="line">        <span class="keyword">return</span> <span class="type">URLEncoding</span>.<span class="keyword">default</span></div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="comment">/// 要执行的HTTP任务的类型</span></div><div class="line">    <span class="keyword">var</span> task: <span class="type">Task</span> &#123;</div><div class="line">        <span class="keyword">return</span> .request</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="comment">/// 提供存根数据用于测试</span></div><div class="line">    <span class="comment">/// 只在单元测试文件中有作用</span></div><div class="line">    <span class="keyword">var</span> sampleData: <span class="type">Data</span> &#123;</div><div class="line">        <span class="keyword">return</span> <span class="string">""</span>.data(using: <span class="type">String</span>.<span class="type">Encoding</span>.utf8)!</div><div class="line">    &#125;</div><div class="line"></div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>我们实现了这个 <code>enum</code> ，我们就相当于完成了一个网络请求所需要的一个 <code>endpoint</code> ，<code>endpoint</code> 其实就是一个结构，包含了我们一个请求所需要的基本信息，比如 <code>url</code> ，<code>parameter</code> 等。 <code>endpoint</code> 好了这时候我们就需要一个工具去发送这个请求。于是 <code>Moya</code> 提供一个发送请求的 <code>Provider</code></p>
+<figure class="highlight swift"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">let</span> provider = <span class="type">RxMoyaProvider</span>&lt;<span class="type">MoyaApi</span>&gt;()</div></pre></td></tr></table></figure>
+<p>然后，我们可以使用这个 <code>provider</code> 发起一个网络请求：</p>
+<figure class="highlight swift"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">provider.request(.threadList(mod: <span class="string">"getAppIndexThreadList"</span>, page: <span class="string">"1"</span>)) &#123; result <span class="keyword">in</span></div><div class="line">    <span class="keyword">switch</span> result &#123;</div><div class="line">    <span class="keyword">case</span> <span class="keyword">let</span> .success(response):</div><div class="line">    .......</div><div class="line">    <span class="keyword">case</span> <span class="keyword">let</span> .failure(error):</div><div class="line">    ......</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h2 id="Endpoint-Closure"><a href="#Endpoint-Closure" class="headerlink" title="Endpoint Closure"></a>Endpoint Closure</h2><p><code>Moya</code> 的这个功能，可以很方便的让我们处理网络请求的 <code>Header</code> 或者公共参数：</p>
+<figure class="highlight swift"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">let</span> headerFields: [<span class="type">String</span>: <span class="type">String</span>] = [<span class="string">"agent"</span> : <span class="string">"XXXX"</span>]</div><div class="line"></div><div class="line"><span class="keyword">var</span> publicParameters: [<span class="type">String</span> : <span class="type">Any</span>] = [<span class="string">"platform"</span>      : <span class="string">"iOS"</span>,</div><div class="line">                                        <span class="string">"clientVersion"</span> : <span class="string">"1.0.0"</span>,</div><div class="line">                                        <span class="string">"network"</span>       : <span class="string">"WIFI"</span>]</div><div class="line"></div><div class="line"><span class="keyword">private</span> <span class="keyword">let</span> endPointClosure = &#123; (target: <span class="type">MoyaApi</span>) -&gt; <span class="type">Endpoint</span>&lt;<span class="type">MoyaApi</span>&gt; <span class="keyword">in</span></div><div class="line">    <span class="keyword">let</span> defaultEndpoint = <span class="type">MoyaProvider</span>&lt;<span class="type">MoyaApi</span>&gt;.defaultEndpointMapping(<span class="keyword">for</span>: target)</div><div class="line">    <span class="keyword">return</span> defaultEndpoint.adding(parameters: publicParameters <span class="keyword">as</span> [<span class="type">String</span> : <span class="type">AnyObject</span>]?, httpHeaderFields: headerFields)</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="keyword">let</span> provider = <span class="type">RxMoyaProvider</span>&lt;<span class="type">MoyaApi</span>&gt;(endpointClosure: endPointClosure)])</div></pre></td></tr></table></figure>
+<h2 id="插件机制"><a href="#插件机制" class="headerlink" title="插件机制"></a>插件机制</h2><p><code>Moya</code> 的插件机制也很好用，提供了两个接口，willSendRequest 和 didReceiveResponse，可以在请求发出前和请求收到后做一些额外的处理，并且不和主功能耦合。</p>
+<p><code>Moya</code> 本身提供了打印网路请求日志的插件和 NetworkActivityIndicator 的插件。</p>
+<p>例如网络请求过程中展示 <code>HUD</code> 的插件：</p>
+<figure class="highlight swift"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">final</span> <span class="class"><span class="keyword">class</span> <span class="title">MoyaPlugin</span>: <span class="title">PluginType</span> </span>&#123;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">func</span> <span class="title">willSend</span><span class="params">(<span class="number">_</span> request: RequestType, target: TargetType)</span></span> &#123;</div><div class="line">       <span class="comment">// 获取请求的URL</span></div><div class="line"><span class="comment">//        guard let requestURLString = request.request?.url?.absoluteString else &#123; return &#125;</span></div><div class="line"></div><div class="line">        <span class="type">UIViewController</span>.showHUD()</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">func</span> <span class="title">didReceive</span><span class="params">(<span class="number">_</span> result: Result&lt;Moya.Response, MoyaError&gt;, target: TargetType)</span></span> &#123;</div><div class="line">        <span class="comment">// 只监听失败</span></div><div class="line"><span class="comment">//        guard case Result.failure(_) = result else &#123; return &#125;</span></div><div class="line"></div><div class="line">        <span class="type">UIViewController</span>.hideHUD()</div><div class="line">    &#125;</div><div class="line"></div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>使用自定义的插件也很方便：</p>
+<figure class="highlight swift"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">let</span> provider = <span class="type">RxMoyaProvider</span>&lt;<span class="type">MoyaApi</span>&gt;(endpointClosure: endPointClosure, plugins:[<span class="type">NetworkLoggerPlugin</span>(verbose: <span class="literal">true</span>), <span class="type">MoyaPlugin</span>()])</div></pre></td></tr></table></figure>
+<h2 id="扩展"><a href="#扩展" class="headerlink" title="扩展"></a>扩展</h2><p>使用 <code>Moya + RxSwift</code>， 我们可以对 <code>Observable</code> 进行扩展，这样我们就可以用一种优雅的方式实现链式语法。</p>
+<p><code>Moya</code> 自带了一些 <code>Observable</code>，这里我们介绍一个我们自己的实现。</p>
+<p>比如，我们实现一个扩展，在网络请求失败的时候，弹出 <code>Toast</code> :</p>
+<figure class="highlight swift"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div></pre></td><td class="code"><pre><div class="line"><span class="class"><span class="keyword">extension</span> <span class="title">Observable</span> </span>&#123;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">func</span> <span class="title">showErrorToast</span><span class="params">()</span></span> -&gt; <span class="type">Observable</span>&lt;<span class="type">Element</span>&gt; &#123;</div><div class="line">        <span class="keyword">return</span> <span class="keyword">self</span>.<span class="keyword">do</span>(onNext: &#123; response <span class="keyword">in</span></div><div class="line"></div><div class="line">            <span class="keyword">let</span> json = response <span class="keyword">as</span>! [<span class="type">String</span> : <span class="type">Any</span>]</div><div class="line">            <span class="keyword">if</span> <span class="keyword">let</span> <span class="built_in">c</span> = json[<span class="type">RESULT_CODE</span>] <span class="keyword">as</span>? <span class="type">Int</span>, <span class="built_in">c</span> != <span class="number">0</span> &#123;</div><div class="line">                <span class="comment">// 错误信息，弹出Toast</span></div><div class="line">                <span class="type">UIViewController</span>.showStatus(title: json[<span class="type">RESULT_MESSAGE</span>] <span class="keyword">as</span>! <span class="type">String</span>)</div><div class="line">            &#125;</div><div class="line"></div><div class="line">        &#125;, onError: &#123; error <span class="keyword">in</span></div><div class="line">            <span class="comment">// 错误信息，弹出Toast</span></div><div class="line">            <span class="type">UIViewController</span>.showStatus(title: error.localizedDescription)</div><div class="line">        &#125;)</div><div class="line">    &#125;</div><div class="line"></div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>使用它：</p>
+<figure class="highlight swift"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">provider.request(.threadList(mod: <span class="string">"getAppIndexThreadList"</span>, page: <span class="string">"1"</span>))</div><div class="line">            .filterSuccessfulStatusCodes()</div><div class="line">            .showErrorToast() &#123; result <span class="keyword">in</span></div><div class="line">            <span class="keyword">switch</span> result &#123;</div><div class="line">            <span class="keyword">case</span> <span class="keyword">let</span> .success(response):</div><div class="line">                .......</div><div class="line">            <span class="keyword">case</span> <span class="keyword">let</span> .failure(error):</div><div class="line">                ......</div><div class="line">            &#125;</div><div class="line">        &#125;</div></pre></td></tr></table></figure>
+<h2 id="JSON-To-Model"><a href="#JSON-To-Model" class="headerlink" title="JSON To Model"></a>JSON To Model</h2><p>这里我们介绍一种通过扩展 <code>Observable</code> 实现 <code>JSON To Model</code> 的方式：</p>
+<figure class="highlight swift"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div></pre></td><td class="code"><pre><div class="line"><span class="class"><span class="keyword">extension</span> <span class="title">Observable</span> </span>&#123;</div><div class="line"></div><div class="line">    <span class="comment">/// HandyJSON To Object</span></div><div class="line">    <span class="comment">// 从json data中获取Object数据</span></div><div class="line">    <span class="function"><span class="keyword">func</span> <span class="title">mapObjectFromData</span>&lt;T: HandyJSON&gt;<span class="params">(type: T.<span class="keyword">Type</span>)</span></span> -&gt; <span class="type">Observable</span>&lt;<span class="type">T</span>&gt; &#123;</div><div class="line"></div><div class="line">        <span class="keyword">return</span> mapObject(type: type, designatedPath: <span class="type">RESULT_DATA</span>)</div><div class="line"></div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="comment">// 从指定json位置获取Object数据</span></div><div class="line">    <span class="function"><span class="keyword">func</span> <span class="title">mapObject</span>&lt;T: HandyJSON&gt;<span class="params">(type: T.<span class="keyword">Type</span>, designatedPath: String? = <span class="literal">nil</span>)</span></span> -&gt; <span class="type">Observable</span>&lt;<span class="type">T</span>&gt; &#123;</div><div class="line"></div><div class="line">        <span class="keyword">return</span> <span class="keyword">self</span>.<span class="built_in">map</span> &#123; response <span class="keyword">in</span></div><div class="line"></div><div class="line">            <span class="keyword">guard</span> <span class="keyword">let</span> dict = response <span class="keyword">as</span>? [<span class="type">String</span> : <span class="type">Any</span>] <span class="keyword">else</span> &#123;</div><div class="line">                <span class="keyword">throw</span> <span class="type">RxSwiftMoyaError</span>.parseJSONError</div><div class="line">            &#125;</div><div class="line"></div><div class="line">            <span class="keyword">if</span> dict[<span class="string">"code"</span>] != <span class="literal">nil</span>, <span class="keyword">let</span> code = dict[<span class="type">RESULT_CODE</span>] <span class="keyword">as</span>? <span class="type">Int</span>, code != <span class="number">0</span> &#123;</div><div class="line">                <span class="keyword">throw</span> <span class="type">RxSwiftMoyaError</span>.noData</div><div class="line">            &#125;</div><div class="line"></div><div class="line">            <span class="keyword">guard</span> <span class="keyword">let</span> data = <span class="keyword">try</span>? <span class="type">JSONSerialization</span>.data(withJSONObject: dict) <span class="keyword">else</span> &#123;</div><div class="line">                <span class="keyword">throw</span> <span class="type">RxSwiftMoyaError</span>.parseJSONError</div><div class="line">            &#125;</div><div class="line"></div><div class="line">            <span class="keyword">let</span> jsonString = <span class="type">String</span>(data: data, encoding: .utf8)</div><div class="line"></div><div class="line">            <span class="keyword">guard</span> <span class="keyword">let</span> object = <span class="type">JSONDeserializer</span>&lt;<span class="type">T</span>&gt;.deserializeFrom(json: jsonString, designatedPath: designatedPath) <span class="keyword">else</span> &#123;</div><div class="line">                <span class="keyword">throw</span> <span class="type">RxSwiftMoyaError</span>.parseJSONError</div><div class="line">            &#125;</div><div class="line"></div><div class="line">            <span class="keyword">return</span> object</div><div class="line">        &#125;</div><div class="line"></div><div class="line">    &#125;</div><div class="line"></div><div class="line"></div><div class="line"></div><div class="line">    <span class="comment">/// HandyJSON To Array</span></div><div class="line">    <span class="function"><span class="keyword">func</span> <span class="title">mapArrayFromData</span>&lt;T: HandyJSON&gt;<span class="params">(type: T.<span class="keyword">Type</span>)</span></span> -&gt; <span class="type">Observable</span>&lt;[<span class="type">T</span>]&gt; &#123;</div><div class="line">        <span class="keyword">return</span> mapArray(type: type, designatedPath: <span class="type">RESULT_DATA</span>)</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">func</span> <span class="title">mapArray</span>&lt;T: HandyJSON&gt;<span class="params">(type: T.<span class="keyword">Type</span>, designatedPath: String? = <span class="literal">nil</span>)</span></span> -&gt; <span class="type">Observable</span>&lt;[<span class="type">T</span>]&gt; &#123;</div><div class="line"></div><div class="line">        <span class="keyword">return</span> <span class="keyword">self</span>.<span class="built_in">map</span> &#123; response <span class="keyword">in</span></div><div class="line"></div><div class="line">            <span class="keyword">guard</span> <span class="keyword">let</span> dict = response <span class="keyword">as</span>? [<span class="type">String</span> : <span class="type">Any</span>] <span class="keyword">else</span> &#123;</div><div class="line">                <span class="keyword">throw</span> <span class="type">RxSwiftMoyaError</span>.parseJSONError</div><div class="line">            &#125;</div><div class="line"></div><div class="line">            <span class="keyword">if</span> dict[<span class="string">"code"</span>] != <span class="literal">nil</span>, <span class="keyword">let</span> code = dict[<span class="type">RESULT_CODE</span>] <span class="keyword">as</span>? <span class="type">Int</span>, code != <span class="number">0</span> &#123;</div><div class="line">                <span class="keyword">throw</span> <span class="type">RxSwiftMoyaError</span>.noData</div><div class="line">            &#125;</div><div class="line"></div><div class="line">            <span class="keyword">guard</span> <span class="keyword">let</span> data = <span class="keyword">try</span>? <span class="type">JSONSerialization</span>.data(withJSONObject: dict) <span class="keyword">else</span> &#123;</div><div class="line">                <span class="keyword">throw</span> <span class="type">RxSwiftMoyaError</span>.parseJSONError</div><div class="line">            &#125;</div><div class="line"></div><div class="line">            <span class="keyword">let</span> jsonString = <span class="type">String</span>(data: data, encoding: .utf8)</div><div class="line"></div><div class="line">            <span class="keyword">guard</span> <span class="keyword">let</span> array = <span class="type">JSONDeserializer</span>&lt;<span class="type">T</span>&gt;.deserializeModelArrayFrom(json: jsonString, designatedPath: designatedPath) <span class="keyword">as</span>? [<span class="type">T</span>] <span class="keyword">else</span> &#123;</div><div class="line">                <span class="keyword">throw</span> <span class="type">RxSwiftMoyaError</span>.parseJSONError</div><div class="line">            &#125;</div><div class="line"></div><div class="line">            <span class="keyword">return</span> array</div><div class="line">        &#125;</div><div class="line"></div><div class="line">    &#125;</div><div class="line"></div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>使用：</p>
+<figure class="highlight swift"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div></pre></td><td class="code"><pre><div class="line">provider.request(.threadList(mod: <span class="string">"getAppIndexThreadList"</span>, page: <span class="string">"1"</span>))</div><div class="line">            .filterSuccessfulStatusCodes()</div><div class="line">            .mapJSON()</div><div class="line">            .showErrorToast()</div><div class="line">            .mapArrayFromData(type: <span class="type">ListModel</span>.<span class="keyword">self</span>)</div><div class="line">            .subscribe (&#123; event <span class="keyword">in</span></div><div class="line">                <span class="keyword">switch</span> event &#123;</div><div class="line">                <span class="keyword">case</span> .next(<span class="keyword">let</span> list):</div><div class="line">                    <span class="keyword">self</span>.showAlertView(title: <span class="string">"SUCCESS"</span>, message: <span class="string">"request is success"</span>, action: &#123;</div><div class="line">                        <span class="built_in">print</span>(list)</div><div class="line">                    &#125;)</div><div class="line"></div><div class="line">                <span class="keyword">case</span> .error(<span class="keyword">let</span> error):</div><div class="line">                    <span class="built_in">print</span>(error.localizedDescription)</div><div class="line"></div><div class="line">                <span class="keyword">case</span> .completed:</div><div class="line">                    <span class="keyword">break</span></div><div class="line"></div><div class="line">                &#125;</div><div class="line">            &#125;)</div><div class="line">            .addDisposableTo(disposeBag)</div></pre></td></tr></table></figure>
+<h1 id="DEMO"><a href="#DEMO" class="headerlink" title="DEMO"></a>DEMO</h1><p>Demo: <a href="https://github.com/huxiaoyang/RxMoyaHandyJSONDemo" target="_blank" rel="external">GitHub</a></p>
+<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><p><a href="https://liuduo.me/2016/07/24/rxswiftmoyanetwork/" target="_blank" rel="external">https://liuduo.me/2016/07/24/rxswiftmoyanetwork/</a></p>
+<p><a href="https://github.com/Moya/Moya/tree/master/docs/Examples" target="_blank" rel="external">https://github.com/Moya/Moya/tree/master/docs/Examples</a></p>
+<p><a href="http://www.jianshu.com/p/d642865f0a64" target="_blank" rel="external">http://www.jianshu.com/p/d642865f0a64</a></p>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/07/24/学习RxSwift-基础语法/" rel="next" title="RxSwift-基础语法">
+                <i class="fa fa-chevron-left"></i> RxSwift-基础语法
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div id="lv-container" data-id="city" data-uid="MTAyMC8yOTU3OC82MTQ2"></div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/uploads/huyang.png"
+               alt="Void" />
+          <p class="site-author-name" itemprop="name">Void</p>
+           
+              <p class="site-description motion-element" itemprop="description">Someone crossed my mind</p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives/">
+                <span class="site-state-item-count">6</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">3</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">5</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Moya"><span class="nav-number">1.</span> <span class="nav-text">Moya</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#RxSwift"><span class="nav-number">2.</span> <span class="nav-text">RxSwift</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#HandyJSON"><span class="nav-number">3.</span> <span class="nav-text">HandyJSON</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Moya的实际使用分析"><span class="nav-number">4.</span> <span class="nav-text">Moya的实际使用分析</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#基本使用"><span class="nav-number">4.1.</span> <span class="nav-text">基本使用</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Endpoint-Closure"><span class="nav-number">4.2.</span> <span class="nav-text">Endpoint Closure</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#插件机制"><span class="nav-number">4.3.</span> <span class="nav-text">插件机制</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#扩展"><span class="nav-number">4.4.</span> <span class="nav-text">扩展</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#JSON-To-Model"><span class="nav-number">4.5.</span> <span class="nav-text">JSON To Model</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#DEMO"><span class="nav-number">5.</span> <span class="nav-text">DEMO</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#参考"><span class="nav-number">6.</span> <span class="nav-text">参考</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Void</span>
+</div>
+
+
+
+        
+<div class="busuanzi-count">
+  <script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+
+  
+</div>
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.1"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.1"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.1"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.1"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.1"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+    <script type="text/javascript">
+      (function(d, s) {
+        var j, e = d.getElementsByTagName(s)[0];
+        if (typeof LivereTower === 'function') { return; }
+        j = d.createElement(s);
+        j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
+        j.async = true;
+        e.parentNode.insertBefore(j, e);
+      })(document, 'script');
+    </script>
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
