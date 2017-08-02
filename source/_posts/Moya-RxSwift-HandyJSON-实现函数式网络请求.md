@@ -1,7 +1,10 @@
 ---
 title: Moya + RxSwift + HandyJSON 实现函数式网络请求
 date: 2017-07-27 16:33:06
-tags:
+tags: 
+  - Swift
+  - RxSwift
+categories: Swift
 ---
 
 # Moya
