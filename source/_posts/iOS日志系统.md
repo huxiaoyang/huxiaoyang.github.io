@@ -35,6 +35,13 @@ fprintf(stderr,"------------ * ------------\n\n");\
 
 [NSLog效率低下的原因及尝试lldb断点打印Log](http://blog.sunnyxx.com/2014/04/22/objc_dig_nslog/)
 
+# 开篇
+
+ 本文内容包含:
+ 1. `NSLog` 的替换和配置
+ 1. 代码`解耦和`收集Log
+ 1. 真机调试过程中`实时`查看Log
+
 # CocoaLumberjack
 
 不使用 `NSLog` ，我们同时又有打Log的需求，怎么办？
