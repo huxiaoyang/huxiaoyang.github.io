@@ -1,0 +1,814 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.1" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="iOS,工具," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.1" />
+
+
+
+
+
+
+<meta name="description" content="几乎每个iOS开发者，都会使用 NSLog 来进行项目调试，把信息打印在Xcode控制台，快速识别分析。 但是，NSLog 并不是一个太友好的Log工具，使用 NSLog 打印大量Log，如果Log很频繁，比如使用 CADisplayLink 每一帧都打印Log，会明显的拖慢程序的运行速度。 虽然我们可以通过预编译宏做一些处理： 123456789101112131415#ifndef __O">
+<meta name="keywords" content="iOS,工具">
+<meta property="og:type" content="article">
+<meta property="og:title" content="iOS日志系统">
+<meta property="og:url" content="http://walled.men/2017/08/07/iOS日志系统/index.html">
+<meta property="og:site_name" content="墙里墙外">
+<meta property="og:description" content="几乎每个iOS开发者，都会使用 NSLog 来进行项目调试，把信息打印在Xcode控制台，快速识别分析。 但是，NSLog 并不是一个太友好的Log工具，使用 NSLog 打印大量Log，如果Log很频繁，比如使用 CADisplayLink 每一帧都打印Log，会明显的拖慢程序的运行速度。 虽然我们可以通过预编译宏做一些处理： 123456789101112131415#ifndef __O">
+<meta property="og:updated_time" content="2017-08-07T08:43:13.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="iOS日志系统">
+<meta name="twitter:description" content="几乎每个iOS开发者，都会使用 NSLog 来进行项目调试，把信息打印在Xcode控制台，快速识别分析。 但是，NSLog 并不是一个太友好的Log工具，使用 NSLog 打印大量Log，如果Log很频繁，比如使用 CADisplayLink 每一帧都打印Log，会明显的拖慢程序的运行速度。 虽然我们可以通过预编译宏做一些处理： 123456789101112131415#ifndef __O">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    sidebar: {"position":"left","display":"hide","offset":12,"offset_float":0,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://walled.men/2017/08/07/iOS日志系统/"/>
+
+
+
+
+
+  <title>iOS日志系统 | 墙里墙外</title>
+  
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "//tajs.qq.com/stats?sId=63067043";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">墙里墙外</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="http://walled.men/2017/08/07/iOS日志系统/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Void">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/uploads/huyang.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="墙里墙外">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">iOS日志系统</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-08-07T13:33:26+08:00">
+                2017-08-07
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/iOS/" itemprop="url" rel="index">
+                    <span itemprop="name">iOS</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+            <span class="post-meta-divider">|</span>
+            <span class="page-pv"><i class="fa fa-file-o"></i> 浏览
+            <span class="busuanzi-value" id="busuanzi_value_page_pv" ></span>次
+            </span>
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>几乎每个iOS开发者，都会使用 <code>NSLog</code> 来进行项目调试，把信息打印在Xcode控制台，快速识别分析。</p>
+<p>但是，<code>NSLog</code> 并不是一个太友好的Log工具，使用 <code>NSLog</code> 打印大量Log，如果Log很频繁，比如使用 <code>CADisplayLink</code> 每一帧都打印Log，会明显的拖慢程序的运行速度。</p>
+<p>虽然我们可以通过预编译宏做一些处理：</p>
+<figure class="highlight swift"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line">#ifndef __OPTIMIZE__</div><div class="line"></div><div class="line">#define <span class="type">NSLog</span>(<span class="type">FORMAT</span>, ...) <span class="keyword">do</span>&#123;\</div><div class="line">fprintf(stderr,<span class="string">"&lt;%s : "</span>, [[[<span class="type">NSString</span> stringWithUTF8String:<span class="keyword">__FILE__</span>] lastPathComponent] <span class="type">UTF8String</span>]);\</div><div class="line">fprintf(stderr,<span class="string">"%zd&gt; "</span>, <span class="keyword">__LINE__</span>);\</div><div class="line">fprintf(stderr,<span class="string">"%s\n"</span>, __func__);\</div><div class="line">fprintf(stderr,<span class="string">"%s\n"</span>, [[<span class="type">NSString</span> stringWithFormat:<span class="type">FORMAT</span>, ##__VA_ARGS__] <span class="type">UTF8String</span>]);\</div><div class="line">fprintf(stderr,<span class="string">"------------ * ------------\n\n"</span>);\</div><div class="line">&#125; <span class="keyword">while</span>(<span class="number">0</span>)</div><div class="line"></div><div class="line">#<span class="keyword">else</span></div><div class="line"></div><div class="line"># define <span class="type">NSLog</span>(...) &#123;&#125;</div><div class="line"></div><div class="line">#endif</div></pre></td></tr></table></figure>
+<p>但是，很多情况下我们不建议直接使用 <code>NSLog</code>。具体的原因，可以查看这篇博客：</p>
+<p><a href="http://blog.sunnyxx.com/2014/04/22/objc_dig_nslog/" target="_blank" rel="external">NSLog效率低下的原因及尝试lldb断点打印Log</a></p>
+<h1 id="CocoaLumberjack"><a href="#CocoaLumberjack" class="headerlink" title="CocoaLumberjack"></a>CocoaLumberjack</h1><p>不使用 <code>NSLog</code> ，我们同时又有打Log的需求，怎么办？</p>
+<p>推荐使用 <a href="https://github.com/CocoaLumberjack/CocoaLumberjack" target="_blank" rel="external">CocoaLumberjack</a></p>
+<p>Demo和用法，推荐查看官方文档。不想看英文，可以往下看</p>
+<h2 id="简单介绍CocoaLumberjack"><a href="#简单介绍CocoaLumberjack" class="headerlink" title="简单介绍CocoaLumberjack"></a>简单介绍CocoaLumberjack</h2><p><code>CocoaLumberjack</code> 全局日志级别分如下几种：</p>
+<figure class="highlight objc"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">typedef</span> <span class="built_in">NS_ENUM</span>(<span class="built_in">NSUInteger</span>, DDLogLevel)&#123;</div><div class="line">    <span class="comment">/**</span></div><div class="line">     *  不输出日志</div><div class="line">     */</div><div class="line">    DDLogLevelOff       = <span class="number">0</span>,</div><div class="line"></div><div class="line">    <span class="comment">/**</span></div><div class="line">     *  仅仅能看到Error相关的日志输出</div><div class="line">     */</div><div class="line">    DDLogLevelError     = (DDLogFlagError),</div><div class="line"></div><div class="line">    <span class="comment">/**</span></div><div class="line">     *  能看到Error、Warn相关的日志输出</div><div class="line">     */</div><div class="line">    DDLogLevelWarning   = (DDLogLevelError   | DDLogFlagWarning),</div><div class="line"></div><div class="line">    <span class="comment">/**</span></div><div class="line">     *  能够看到Error、Warn、Info相关的日志输出</div><div class="line">     */</div><div class="line">    DDLogLevelInfo      = (DDLogLevelWarning | DDLogFlagInfo),</div><div class="line"></div><div class="line">    <span class="comment">/**</span></div><div class="line">     *  能够看到Error/Warn/Info/Debug相关的日志输出</div><div class="line">     */</div><div class="line">    DDLogLevelDebug     = (DDLogLevelInfo    | DDLogFlagDebug),</div><div class="line"></div><div class="line">    <span class="comment">/**</span></div><div class="line">     * 能够看到所有级别的日志输出</div><div class="line">     */</div><div class="line">    DDLogLevelVerbose   = (DDLogLevelDebug   | DDLogFlagVerbose),</div><div class="line"></div><div class="line">    <span class="comment">/**</span></div><div class="line">     *  能够看到所有级别的日志输出</div><div class="line">     */</div><div class="line">    DDLogLevelAll       = <span class="built_in">NSUIntegerMax</span></div><div class="line">&#125;;</div></pre></td></tr></table></figure>
+<p>同时，<code>CocoaLumberjack</code> 还设定了具体Log级别</p>
+<figure class="highlight objc"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">typedef</span> <span class="built_in">NS_OPTIONS</span>(<span class="built_in">NSUInteger</span>, DDLogFlag)&#123;</div><div class="line">    <span class="comment">/**</span></div><div class="line">     *  0...00001 DDLogFlagError</div><div class="line">     */</div><div class="line">    DDLogFlagError      = (<span class="number">1</span> &lt;&lt; <span class="number">0</span>),</div><div class="line"></div><div class="line">    <span class="comment">/**</span></div><div class="line">     *  0...00010 DDLogFlagWarning</div><div class="line">     */</div><div class="line">    DDLogFlagWarning    = (<span class="number">1</span> &lt;&lt; <span class="number">1</span>),</div><div class="line"></div><div class="line">    <span class="comment">/**</span></div><div class="line">     *  0...00100 DDLogFlagInfo</div><div class="line">     */</div><div class="line">    DDLogFlagInfo       = (<span class="number">1</span> &lt;&lt; <span class="number">2</span>),</div><div class="line"></div><div class="line">    <span class="comment">/**</span></div><div class="line">     *  0...01000 DDLogFlagDebug</div><div class="line">     */</div><div class="line">    DDLogFlagDebug      = (<span class="number">1</span> &lt;&lt; <span class="number">3</span>),</div><div class="line"></div><div class="line">    <span class="comment">/**</span></div><div class="line">     *  0...10000 DDLogFlagVerbose</div><div class="line">     */</div><div class="line">    DDLogFlagVerbose    = (<span class="number">1</span> &lt;&lt; <span class="number">4</span>)</div><div class="line">&#125;;</div></pre></td></tr></table></figure>
+<blockquote>
+<p>注意：DDLogLevel 定义了全局的 log 等级，DDLogFlag 是我们打 log 时设定的 log 等级，CocoaLumberjack 会比较两者，如果 flag 低于 level，则不会打 log。</p>
+</blockquote>
+<h2 id="开始使用"><a href="#开始使用" class="headerlink" title="开始使用"></a>开始使用</h2><p>使用 <code>Cocoapods</code> 或者其它方式将 <code>CocoaLumberjack</code> 工程引入项目。</p>
+<p>然后我们在项目中来具体配置使用：</p>
+<h3 id="第一步"><a href="#第一步" class="headerlink" title="第一步"></a>第一步</h3><p>我们创建一个工具类 <code>HYLogManager</code>，用来管理集中配置。</p>
+<figure class="highlight objc"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">+ (<span class="keyword">void</span>)setupLog &#123;</div><div class="line">    [DDLog addLogger:[DDTTYLogger sharedInstance]]; <span class="comment">// TTY = Xcode console</span></div><div class="line">    [DDLog addLogger:[DDASLLogger sharedInstance]]; <span class="comment">// ASL = Apple System Logs</span></div><div class="line"></div><div class="line">    DDFileLogger *fileLogger = [[DDFileLogger alloc] init]; <span class="comment">// File Logger</span></div><div class="line">    fileLogger.rollingFrequency = <span class="number">60</span> * <span class="number">60</span> * <span class="number">24</span>; <span class="comment">// 24 hour rolling</span></div><div class="line">    fileLogger.logFileManager.maximumNumberOfLogFiles = <span class="number">7</span>;</div><div class="line">    [DDLog addLogger:fileLogger withLevel:DDLogLevelError];</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>然后在 <code>application:didFinishLaunchingWithOptions:</code> 方法中使用 <code>[HYLogManager setupLog]</code> 初始化。</p>
+<h3 id="第二步"><a href="#第二步" class="headerlink" title="第二步"></a>第二步</h3><p>使用宏来处理，指定日志的记录级别。可以在<code>PCH</code>文件或者我们创建的工具类 <code>HYLogManager.h</code> 中设置。</p>
+<figure class="highlight objc"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"><span class="comment">//通过DEBUG模式设置全局日志等级，DEBUG时为Verbose，所有日志信息都可以打印，否则Error，只打印</span></div><div class="line"><span class="meta">#ifdef DEBUG</span></div><div class="line"><span class="keyword">static</span> <span class="keyword">const</span> DDLogLevel ddLogLevel = DDLogLevelVerbose;</div><div class="line"><span class="meta">#else</span></div><div class="line"><span class="keyword">static</span> <span class="keyword">const</span> DDLogLevel ddLogLevel = DDLogLevelError;</div><div class="line"><span class="meta">#endif</span></div></pre></td></tr></table></figure>
+<p>之后我们就可以在代码中使用：</p>
+<figure class="highlight objc"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">DDLogError(<span class="string">@"[Error]:%@"</span>, <span class="string">@"输出错误信息"</span>);<span class="comment">//输出错误信息</span></div><div class="line">DDLogWarn(<span class="string">@"[Warn]:%@"</span>, <span class="string">@"输出警告信息"</span>);<span class="comment">//输出警告信息</span></div><div class="line">DDLogInfo(<span class="string">@"[Info]:%@"</span>, <span class="string">@"输出描述信息"</span>);<span class="comment">//输出描述信息</span></div><div class="line">DDLogDebug(<span class="string">@"[Debug]:%@"</span>, <span class="string">@"输出调试信息"</span>);<span class="comment">//输出调试信息</span></div><div class="line">DDLogVerbose(<span class="string">@"[Verbose]:%@"</span>, <span class="string">@"输出详细信息"</span>);<span class="comment">//输出详细信息</span></div></pre></td></tr></table></figure>
+<p>来替换 <code>NSLog</code>。</p>
+<h3 id="第三步"><a href="#第三步" class="headerlink" title="第三步"></a>第三步</h3><p>如果我们想要 <code>format</code> 日志，比如我们想要打印出文件名、函数名、行号等信息。</p>
+<p>有两种方式：</p>
+<ol>
+<li><p>配置一个宏</p>
+ <figure class="highlight objc"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="meta">#define HYLog(format, ...) DDLogError((@<span class="meta-string">"[%@][Line:%d]:"</span> format), [[NSString stringWithUTF8String:__FILE__] lastPathComponent], __LINE__, ## __VA_ARGS__)</span></div></pre></td></tr></table></figure>
+<p> 使用：<code>HYLog(@&quot;User selected file:%@ withSize:%d&quot;, @&quot;filePath&quot;, 123)</code></p>
+<p> 打印结果：<code>2017-08-07 14:42:41:268 BSKit[33893:4665914] [AppDelegate.m][Line:87]:User selected file:filePath withSize:123</code></p>
+</li>
+<li><p>实现 <code>DDLogFormatter</code> 协议</p>
+ <figure class="highlight objc"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line"><span class="class"><span class="keyword">@interface</span> <span class="title">TestFormatter</span> : <span class="title">NSObject</span> &lt;<span class="title">DDLogFormatter</span>&gt;</span></div><div class="line"></div><div class="line"><span class="keyword">@end</span></div><div class="line"></div><div class="line"><span class="class"><span class="keyword">@implementation</span> <span class="title">TestFormatter</span></span></div><div class="line"></div><div class="line">- (<span class="built_in">NSString</span> *)formatLogMessage:(DDLogMessage *)logMessage</div><div class="line">&#123;</div><div class="line">    <span class="keyword">return</span> [<span class="built_in">NSString</span> stringWithFormat:<span class="string">@"%@ | %@ @ %@ | %@"</span>,</div><div class="line">            [logMessage fileName], logMessage-&gt;_function, @(logMessage-&gt;_line), logMessage-&gt;_message];</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p> 然后，在 <code>HYLogManager</code> 中将初始化方法改为</p>
+ <figure class="highlight objc"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line">+ (<span class="keyword">void</span>)setupLog &#123;</div><div class="line">    [[DDASLLogger sharedInstance] setLogFormatter:formatter];</div><div class="line">    [[DDTTYLogger sharedInstance] setLogFormatter:formatter];</div><div class="line"></div><div class="line">    [DDLog addLogger:[DDTTYLogger sharedInstance]]; <span class="comment">// TTY = Xcode console</span></div><div class="line">    [DDLog addLogger:[DDASLLogger sharedInstance]]; <span class="comment">// ASL = Apple System Logs</span></div><div class="line"></div><div class="line">    DDFileLogger *fileLogger = [[DDFileLogger alloc] init]; <span class="comment">// File Logger</span></div><div class="line">    fileLogger.rollingFrequency = <span class="number">60</span> * <span class="number">60</span> * <span class="number">24</span>; <span class="comment">// 24 hour rolling</span></div><div class="line">    fileLogger.logFileManager.maximumNumberOfLogFiles = <span class="number">7</span>;</div><div class="line">    [DDLog addLogger:fileLogger withLevel:DDLogLevelError];</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p> 使用：<code>DDLogInfo(@&quot;User selected file:%@ withSize:%d&quot;, @&quot;filePath&quot;, 123)</code></p>
+</li>
+</ol>
+<h3 id="第四步"><a href="#第四步" class="headerlink" title="第四步"></a>第四步</h3><p>日志上传，很多时候我们上传的是 <code>crash</code> 信息，如果想上传用户的行为信息，也可以。</p>
+<p>可以从 <code>DDLogFileManager protocol</code> 下面的两个协议中获取Log文件 <code>rolling</code> 时的通知，便可以在此时将Log文件上传：</p>
+<figure class="highlight objc"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">- (<span class="keyword">void</span>)didArchiveLogFile:(<span class="built_in">NSString</span> *)logFilePath;</div><div class="line">- (<span class="keyword">void</span>)didRollAndArchiveLogFile:(<span class="built_in">NSString</span> *)logFilePath;</div></pre></td></tr></table></figure>
+<h1 id="Aspects"><a href="#Aspects" class="headerlink" title="Aspects"></a>Aspects</h1><p>配置完后，我们要手机Log，如果需要统计用户行为用于分析。那么我们需要在工程项目的各个部分打Log。</p>
+<p>我们不可能一个个去找方法添加代码，这样是体力活。</p>
+<p>那么我们怎么优雅的添加Log呢？</p>
+<p>答案是使用 <a href="https://github.com/steipete/Aspects" target="_blank" rel="external">Aspects-iOS面向切面编程框架</a></p>
+<h2 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h2><p>使用 <code>Cocoapods</code></p>
+<figure class="highlight ruby"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">pod <span class="string">'Aspects'</span></div></pre></td></tr></table></figure>
+<h2 id="使用"><a href="#使用" class="headerlink" title="使用"></a>使用</h2><p><code>Aspects</code> 使用很简单，我们这里介绍的是如何写一个配置文件和一个解析器来集中处理Log</p>
+<h3 id="首先，创建配置文件"><a href="#首先，创建配置文件" class="headerlink" title="首先，创建配置文件"></a>首先，创建配置文件</h3><p>创建一个配置类 <code>BSAOPConfigureManager</code>，在这里配置项目中需要打Log的方法。</p>
+<p>头文件：</p>
+<figure class="highlight objc"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div></pre></td><td class="code"><pre><div class="line"><span class="meta">#define BSLoggingTrackedEvents @<span class="meta-string">"com.XiaoYang.BSLoggingTrackedEvents"</span></span></div><div class="line"><span class="meta">#define BSLoggingEventName @<span class="meta-string">"com.XiaoYang.BSLoggingEventName"</span></span></div><div class="line"><span class="meta">#define BSLoggingEventSelectorName @<span class="meta-string">"com.XiaoYang.BSLoggingEventSelectorName"</span></span></div><div class="line"><span class="meta">#define BSLoggingEventHandlerBlock @<span class="meta-string">"com.XiaoYang.BSLoggingEventHandlerBlock"</span></span></div><div class="line"></div><div class="line"></div><div class="line"></div><div class="line"><span class="keyword">typedef</span> <span class="keyword">void</span> (^AspectHandlerBlock)(<span class="keyword">id</span>&lt;AspectInfo&gt; aspectInfo);</div><div class="line"></div><div class="line"></div><div class="line"></div><div class="line"><span class="class"><span class="keyword">@interface</span> <span class="title">BSAOPConfigureManager</span> : <span class="title">NSObject</span></span></div><div class="line"></div><div class="line">+ (<span class="keyword">instancetype</span>)shareInstance;</div><div class="line"></div><div class="line"><span class="keyword">@property</span> (<span class="keyword">nonatomic</span>, <span class="keyword">strong</span>) <span class="built_in">NSDictionary</span> *configs;</div><div class="line"></div><div class="line"><span class="keyword">@end</span></div></pre></td></tr></table></figure>
+<p>实现文件：</p>
+<figure class="highlight objc"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div></pre></td><td class="code"><pre><div class="line"><span class="class"><span class="keyword">@implementation</span> <span class="title">BSAOPConfigureManager</span></span></div><div class="line"></div><div class="line">+ (<span class="keyword">instancetype</span>)shareInstance &#123;</div><div class="line">    <span class="keyword">static</span> BSAOPConfigureManager *instance = <span class="literal">nil</span>;</div><div class="line">    <span class="keyword">static</span> <span class="built_in">dispatch_once_t</span> onceToken;</div><div class="line">    <span class="built_in">dispatch_once</span>(&amp;onceToken, ^&#123;</div><div class="line">        instance = [[BSAOPConfigureManager alloc] init];</div><div class="line">    &#125;);</div><div class="line">    <span class="keyword">return</span> instance;</div><div class="line">&#125;</div><div class="line"></div><div class="line">- (<span class="keyword">instancetype</span>)init &#123;</div><div class="line">    <span class="keyword">self</span> = [<span class="keyword">super</span> init];</div><div class="line">    <span class="keyword">if</span> (<span class="keyword">self</span>) &#123;</div><div class="line"></div><div class="line">    &#125;</div><div class="line">    <span class="keyword">return</span> <span class="keyword">self</span>;</div><div class="line">&#125;</div><div class="line"></div><div class="line">- (<span class="built_in">NSDictionary</span> *)configs &#123;</div><div class="line">    <span class="keyword">if</span> (!_configs) &#123;</div><div class="line">        _configs = @&#123;</div><div class="line">                    <span class="string">@"CollectionViewController"</span>: @&#123;</div><div class="line">                            BSLoggingTrackedEvents: @[</div><div class="line">                                    @&#123;</div><div class="line">                                        BSLoggingEventName: <span class="string">@"button one clicked"</span>,</div><div class="line">                                        BSLoggingEventSelectorName: <span class="string">@"buttonOneClicked:selectItemAtIndexPath:"</span>,</div><div class="line">                                        BSLoggingEventHandlerBlock: ^(<span class="keyword">id</span>&lt;AspectInfo&gt; aspectInfo, <span class="built_in">UICollectionView</span> *collectionView, <span class="built_in">NSIndexPath</span> *indexPath) &#123;</div><div class="line"></div><div class="line">                                            <span class="built_in">dispatch_async</span>(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, <span class="number">0</span>), ^&#123;</div><div class="line">                                                <span class="built_in">NSLog</span>(<span class="string">@"button one clicked"</span>);</div><div class="line"></div><div class="line">                                                <span class="built_in">NSLog</span>(<span class="string">@"class is %@"</span>, [aspectInfo.instance <span class="keyword">class</span>]);</div><div class="line"></div><div class="line">                                                <span class="built_in">NSLog</span>(<span class="string">@"argment is %@ --- %zd"</span>, collectionView, indexPath.row);</div><div class="line">                                            &#125;);</div><div class="line"></div><div class="line">                                        &#125;,</div><div class="line">                                        &#125;,</div><div class="line">                                    @&#123;</div><div class="line">                                        BSLoggingEventName: <span class="string">@"button two clicked"</span>,</div><div class="line">                                        BSLoggingEventSelectorName: <span class="string">@"buttonTwoClicked:"</span>,</div><div class="line">                                        BSLoggingEventHandlerBlock: ^(<span class="keyword">id</span>&lt;AspectInfo&gt; aspectInfo) &#123;</div><div class="line">                                            <span class="built_in">NSLog</span>(<span class="string">@"button two clicked"</span>);</div><div class="line">                                        &#125;,</div><div class="line">                                        &#125;,</div><div class="line">                                    @&#123;</div><div class="line">                                        BSLoggingEventName: <span class="string">@"button three clicked"</span>,</div><div class="line">                                        BSLoggingEventSelectorName: <span class="string">@"buttonThreeClicked:"</span>,</div><div class="line">                                        BSLoggingEventHandlerBlock: ^(<span class="keyword">id</span>&lt;AspectInfo&gt; aspectInfo) &#123;</div><div class="line">                                            <span class="built_in">NSLog</span>(<span class="string">@"button three clicked"</span>);</div><div class="line">                                        &#125;,</div><div class="line">                                        &#125;,</div><div class="line">                                    ],</div><div class="line">                            &#125;,</div><div class="line">                    &#125;;</div><div class="line">    &#125;</div><div class="line">    <span class="keyword">return</span> _configs;</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="keyword">@end</span></div></pre></td></tr></table></figure>
+<h3 id="其次，实现解析器"><a href="#其次，实现解析器" class="headerlink" title="其次，实现解析器"></a>其次，实现解析器</h3><p>创建一个 <code>NSObject</code> 子类，重载它的 <code>load</code> 方法，实现最小的对业务方的“代码入侵” 。</p>
+<figure class="highlight objc"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div></pre></td><td class="code"><pre><div class="line">+ (<span class="keyword">void</span>)load &#123;</div><div class="line">    <span class="built_in">dispatch_once</span>(&amp;onceToken, ^&#123;</div><div class="line">            [BSViewControllerIntercepter setupIntercepter];</div><div class="line">        &#125;);</div><div class="line">&#125;</div><div class="line"></div><div class="line">+ (<span class="keyword">void</span>)setupIntercepter &#123;</div><div class="line">    <span class="comment">// 拦截自定义事件</span></div><div class="line">    <span class="comment">// 我们配置的方法，有可能被更改，或者代码出错，导致该方法不存在。Aspect在hook方法时会返回「Unable to find selector」的error信息</span></div><div class="line">    <span class="comment">// 解析的过程可以放在异步线程，或者下一次loop中</span></div><div class="line">    <span class="built_in">dispatch_async</span>(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, <span class="number">0</span>), ^&#123;</div><div class="line">        <span class="built_in">NSDictionary</span> *configs = [[BSAOPConfigureManager shareInstance] configs];</div><div class="line">        <span class="keyword">for</span> (<span class="built_in">NSString</span> *className <span class="keyword">in</span> configs) &#123;</div><div class="line"></div><div class="line">            Class clazz = <span class="built_in">NSClassFromString</span>(className);</div><div class="line">            <span class="built_in">NSDictionary</span> *config = configs[className];</div><div class="line"></div><div class="line">            <span class="keyword">if</span> (config[BSLoggingTrackedEvents]) &#123;</div><div class="line">                <span class="keyword">for</span> (<span class="built_in">NSDictionary</span> *event <span class="keyword">in</span> config[BSLoggingTrackedEvents]) &#123;</div><div class="line"></div><div class="line">                    SEL selector = <span class="built_in">NSSelectorFromString</span>(event[BSLoggingEventSelectorName]);</div><div class="line">                    AspectHandlerBlock block = event[BSLoggingEventHandlerBlock];</div><div class="line"></div><div class="line">                    <span class="built_in">NSError</span> *error;</div><div class="line">                    <span class="keyword">id</span> s = [clazz aspect_hookSelector:selector</div><div class="line">                                          withOptions:AspectPositionAfter</div><div class="line">                                           usingBlock:block</div><div class="line">                                                error:&amp;error];</div><div class="line"></div><div class="line">                    <span class="keyword">if</span> (error) &#123;</div><div class="line">                        <span class="built_in">NSLog</span>(<span class="string">@"error is %@"</span>, error);</div><div class="line">                    &#125;</div><div class="line"></div><div class="line">                    <span class="built_in">NSLog</span>(<span class="string">@"%@"</span>, s);</div><div class="line"></div><div class="line">                &#125;</div><div class="line">            &#125;</div><div class="line"></div><div class="line">        &#125;</div><div class="line">    &#125;);</div><div class="line"></div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h1 id="GCDWebServer"><a href="#GCDWebServer" class="headerlink" title="GCDWebServer"></a>GCDWebServer</h1><p>我们有了日志打印，但是我们怎么能够查看它呢，使用真机调试的时候，除了上传到服务端，还有什么快速查看的方式呢？</p>
+<ol>
+<li><p>如果 <code>CocoaLumberJack</code> 开启了 <code>DDASLLogger</code>。也就是初始化了这句代码 <code>[DDLog addLogger:[DDASLLogger sharedInstance]]</code></p>
+<p> 我们可以通过Xcode -&gt; window -&gt; devices -&gt; 选中当前设备 -&gt; view device Logs 查看所有当前设备的log</p>
+</li>
+<li><p>但是如果我们为了安全考虑，不开启 <code>DDASLLogger</code> 服务。我们可以使用 <code>GCDWebServer</code></p>
+</li>
+</ol>
+<h2 id="介绍"><a href="#介绍" class="headerlink" title="介绍"></a>介绍</h2><p><code>GCDWebServer</code> 是一个基于 GCD 的轻量级服务器框架，用于内嵌到 MacOS 或者 iOS 系统的应用中提供 HTTP1.1 的服务。使用 GCDWebServer 我们可以很轻松的在我们的应用中搭建一个 HTTP 服务器，让用户可以通过浏览器访问我们应用中的数据。或者使用 GCDWebServer 来实现一个无线U盘 App。</p>
+<p><code>GCDWebServer</code> 功能很强大，这里只简单使用它的共享功能。</p>
+<h2 id="安装-1"><a href="#安装-1" class="headerlink" title="安装"></a>安装</h2><p>引入框架，依然使用 <code>Cocoapods</code> ，根据我们的需求，我使用</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">pod 'GCDWebServer/WebUploader'</div></pre></td></tr></table></figure>
+<h2 id="初始化"><a href="#初始化" class="headerlink" title="初始化"></a>初始化</h2><p>这里我们只想查看Log，所以在 <code>application:didFinishLaunchingWithOptions:</code> 中添加代码：</p>
+<figure class="highlight objc"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="meta">#ifdef DEBUG</span></div><div class="line"><span class="built_in">NSString</span> *documentsPath = [<span class="built_in">NSSearchPathForDirectoriesInDomains</span>(<span class="built_in">NSCachesDirectory</span>, <span class="built_in">NSUserDomainMask</span>, <span class="literal">YES</span>) firstObject];</div><div class="line">    <span class="built_in">NSString</span> *logPath = [documentsPath stringByAppendingPathComponent:<span class="string">@"Logs"</span>];</div><div class="line">    _uploader = [[GCDWebUploader alloc] initWithUploadDirectory:logPath];</div><div class="line"><span class="meta">#endif</span></div></pre></td></tr></table></figure>
+<p>运行之后，使用 <code>Chrome</code> 查看 <code>http://iphone.local/</code>，我们会看到 <code>.log</code> 文件，这就是我们的日志，下载查看即可</p>
+<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><p> <a href="http://www.jianshu.com/p/ea1e6b210b27" target="_blank" rel="external">iOS用CocoaLumberJack抓取crash日志上传</a></p>
+<p> <a href="http://www.iosxxx.com/blog/2015-08-29-iosyi-chang-bu-huo.html" target="_blank" rel="external">iOS异常捕获</a></p>
+<p> <a href="https://github.com/enoughpower/iOS_Notes/wiki/iOS%E6%94%B6%E9%9B%86%E5%B4%A9%E6%BA%83%E4%BF%A1%E6%81%AF%E4%B8%80%E7%82%B9%E6%80%9D%E8%80%83" target="_blank" rel="external">iOS收集崩溃信息一点思考</a></p>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/iOS/" rel="tag"># iOS</a>
+          
+            <a href="/tags/工具/" rel="tag"># 工具</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/08/02/iOS-持续部署/" rel="next" title="iOS 持续部署">
+                <i class="fa fa-chevron-left"></i> iOS 持续部署
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div id="lv-container" data-id="city" data-uid="MTAyMC8yOTU3OC82MTQ2"></div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/uploads/huyang.png"
+               alt="Void" />
+          <p class="site-author-name" itemprop="name">Void</p>
+           
+              <p class="site-description motion-element" itemprop="description">Someone crossed my mind</p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives/">
+                <span class="site-state-item-count">8</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">4</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">6</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#CocoaLumberjack"><span class="nav-number">1.</span> <span class="nav-text">CocoaLumberjack</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#简单介绍CocoaLumberjack"><span class="nav-number">1.1.</span> <span class="nav-text">简单介绍CocoaLumberjack</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#开始使用"><span class="nav-number">1.2.</span> <span class="nav-text">开始使用</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#第一步"><span class="nav-number">1.2.1.</span> <span class="nav-text">第一步</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#第二步"><span class="nav-number">1.2.2.</span> <span class="nav-text">第二步</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#第三步"><span class="nav-number">1.2.3.</span> <span class="nav-text">第三步</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#第四步"><span class="nav-number">1.2.4.</span> <span class="nav-text">第四步</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Aspects"><span class="nav-number">2.</span> <span class="nav-text">Aspects</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#安装"><span class="nav-number">2.1.</span> <span class="nav-text">安装</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#使用"><span class="nav-number">2.2.</span> <span class="nav-text">使用</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#首先，创建配置文件"><span class="nav-number">2.2.1.</span> <span class="nav-text">首先，创建配置文件</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#其次，实现解析器"><span class="nav-number">2.2.2.</span> <span class="nav-text">其次，实现解析器</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#GCDWebServer"><span class="nav-number">3.</span> <span class="nav-text">GCDWebServer</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#介绍"><span class="nav-number">3.1.</span> <span class="nav-text">介绍</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#安装-1"><span class="nav-number">3.2.</span> <span class="nav-text">安装</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#初始化"><span class="nav-number">3.3.</span> <span class="nav-text">初始化</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#参考"><span class="nav-number">4.</span> <span class="nav-text">参考</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Void</span>
+</div>
+
+
+
+        
+<div class="busuanzi-count">
+  <script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+
+  
+</div>
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.1"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.1"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.1"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.1"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.1"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+    <script type="text/javascript">
+      (function(d, s) {
+        var j, e = d.getElementsByTagName(s)[0];
+        if (typeof LivereTower === 'function') { return; }
+        j = d.createElement(s);
+        j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
+        j.async = true;
+        e.parentNode.insertBefore(j, e);
+      })(document, 'script');
+    </script>
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
