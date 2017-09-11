@@ -100,3 +100,6 @@ CocoaPods是iOS中使用很广泛的第三方包管理工具，我们可以用�
 
 首次安装 Cocoapods 会下载官方仓库到本地，受GFW的影响有时候会很慢。
 可以在终端执行 `cd ~/.cocoapods ` ，然后执行 `du -sh *`， 查看下载进度
+
+上传到库成功后，使用 `pod search` 检查时报错 `Unable to find a pod with name, author, summary`。
+解决方案： `rm ~/Library/Caches/CocoaPods/search_index.json`
