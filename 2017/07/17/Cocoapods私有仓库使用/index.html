@@ -100,7 +100,7 @@
 <meta property="og:url" content="http://walled.men/2017/07/17/Cocoapods私有仓库使用/index.html">
 <meta property="og:site_name" content="墙里墙外">
 <meta property="og:description" content="CocoaPods是iOS中使用很广泛的第三方包管理工具，我们可以用来制作自己的开源代码库，也可以制作私有代码库。基于这些功能，我们可以用它来作为iOS的组件化管理工具。 总体步骤 创建私有Spec仓库来管理私有的podspec文件 创建私有的Pod工程文件，并提交到远程git托管平台 创建私有的Pod对应的podspec文件 验证podspec文件的有效性 提交podspec至私有的Spec仓库">
-<meta property="og:updated_time" content="2017-07-18T09:06:45.000Z">
+<meta property="og:updated_time" content="2017-09-11T10:28:31.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="CocoaPods 私有仓库使用">
 <meta name="twitter:description" content="CocoaPods是iOS中使用很广泛的第三方包管理工具，我们可以用来制作自己的开源代码库，也可以制作私有代码库。基于这些功能，我们可以用它来作为iOS的组件化管理工具。 总体步骤 创建私有Spec仓库来管理私有的podspec文件 创建私有的Pod工程文件，并提交到远程git托管平台 创建私有的Pod对应的podspec文件 验证podspec文件的有效性 提交podspec至私有的Spec仓库">
@@ -430,6 +430,7 @@ source &apos;https://huxiaoyang@bitbucket.org/huxiaoyang/MyPrivateSepc.git&apos;
 <li>执行 <code>pod search 工程名</code> 验证结果.</li>
 </ol>
 <h1 id="TIPS"><a href="#TIPS" class="headerlink" title="TIPS"></a>TIPS</h1><p>首次安装 Cocoapods 会下载官方仓库到本地，受GFW的影响有时候会很慢。<br>可以在终端执行 <code>cd ~/.cocoapods</code> ，然后执行 <code>du -sh *</code>， 查看下载进度</p>
+<p>上传到库成功后，使用 <code>pod search</code> 检查时报错 <code>Unable to find a pod with name, author, summary</code>。<br>解决方案： <code>rm ~/Library/Caches/CocoaPods/search_index.json</code></p>
 
       
     </div>
