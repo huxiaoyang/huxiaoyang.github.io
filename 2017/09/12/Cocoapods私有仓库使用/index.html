@@ -77,7 +77,7 @@
 <link href="/css/main.css?v=5.1.1" rel="stylesheet" type="text/css" />
 
 
-  <meta name="keywords" content="iOS,工具," />
+  <meta name="keywords" content="CocoaPods,iOS组件化," />
 
 
 
@@ -93,17 +93,17 @@
 
 
 
-<meta name="description" content="为什么使用持续部署？ 工作多年的老司机会白你一眼，『为什么要手动部署？』。  为了追求手动生成各种证书时候的快感？ 为了享受在iTunes Connect上传ipa的等待？ 为了展示Archive各种测试包的熟练？  以上，如果有一项能够让你觉得舒服。请自动忽略本篇博客。 Fastlane一组工具套件，旨在实现 iOS 应用发布流程的自动化，并且提供一个运行良好的持续部署流程，只需要运行一个简">
-<meta name="keywords" content="iOS,工具">
+<meta name="description" content="CocoaPods是iOS中使用很广泛的第三方包管理工具，我们可以用来制作自己的开源代码库，也可以制作私有代码库。基于这些功能，我们可以用它来作为iOS的组件化管理工具。 总体步骤 创建私有Spec仓库来管理私有的podspec文件 创建私有的Pod工程文件，并提交到远程git托管平台 创建私有的Pod对应的podspec文件 验证podspec文件的有效性 提交podspec至私有的Spec仓库">
+<meta name="keywords" content="CocoaPods,iOS组件化">
 <meta property="og:type" content="article">
-<meta property="og:title" content="iOS 持续部署">
-<meta property="og:url" content="http://walled.men/2017/08/02/iOS-持续部署/index.html">
+<meta property="og:title" content="CocoaPods 私有仓库使用">
+<meta property="og:url" content="http://walled.men/2017/09/12/Cocoapods私有仓库使用/index.html">
 <meta property="og:site_name" content="墙里墙外">
-<meta property="og:description" content="为什么使用持续部署？ 工作多年的老司机会白你一眼，『为什么要手动部署？』。  为了追求手动生成各种证书时候的快感？ 为了享受在iTunes Connect上传ipa的等待？ 为了展示Archive各种测试包的熟练？  以上，如果有一项能够让你觉得舒服。请自动忽略本篇博客。 Fastlane一组工具套件，旨在实现 iOS 应用发布流程的自动化，并且提供一个运行良好的持续部署流程，只需要运行一个简">
-<meta property="og:updated_time" content="2017-09-28T02:26:29.000Z">
+<meta property="og:description" content="CocoaPods是iOS中使用很广泛的第三方包管理工具，我们可以用来制作自己的开源代码库，也可以制作私有代码库。基于这些功能，我们可以用它来作为iOS的组件化管理工具。 总体步骤 创建私有Spec仓库来管理私有的podspec文件 创建私有的Pod工程文件，并提交到远程git托管平台 创建私有的Pod对应的podspec文件 验证podspec文件的有效性 提交podspec至私有的Spec仓库">
+<meta property="og:updated_time" content="2017-09-12T10:02:05.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="iOS 持续部署">
-<meta name="twitter:description" content="为什么使用持续部署？ 工作多年的老司机会白你一眼，『为什么要手动部署？』。  为了追求手动生成各种证书时候的快感？ 为了享受在iTunes Connect上传ipa的等待？ 为了展示Archive各种测试包的熟练？  以上，如果有一项能够让你觉得舒服。请自动忽略本篇博客。 Fastlane一组工具套件，旨在实现 iOS 应用发布流程的自动化，并且提供一个运行良好的持续部署流程，只需要运行一个简">
+<meta name="twitter:title" content="CocoaPods 私有仓库使用">
+<meta name="twitter:description" content="CocoaPods是iOS中使用很广泛的第三方包管理工具，我们可以用来制作自己的开源代码库，也可以制作私有代码库。基于这些功能，我们可以用它来作为iOS的组件化管理工具。 总体步骤 创建私有Spec仓库来管理私有的podspec文件 创建私有的Pod工程文件，并提交到远程git托管平台 创建私有的Pod对应的podspec文件 验证podspec文件的有效性 提交podspec至私有的Spec仓库">
 
 
 
@@ -131,13 +131,13 @@
 
 
 
-  <link rel="canonical" href="http://walled.men/2017/08/02/iOS-持续部署/"/>
+  <link rel="canonical" href="http://walled.men/2017/09/12/Cocoapods私有仓库使用/"/>
 
 
 
 
 
-  <title>iOS 持续部署 | 墙里墙外</title>
+  <title>CocoaPods 私有仓库使用 | 墙里墙外</title>
   
 
 
@@ -275,7 +275,7 @@
   
 
   <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-    <link itemprop="mainEntityOfPage" href="http://walled.men/2017/08/02/iOS-持续部署/">
+    <link itemprop="mainEntityOfPage" href="http://walled.men/2017/09/12/Cocoapods私有仓库使用/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Void">
@@ -292,7 +292,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">iOS 持续部署</h1>
+          <h1 class="post-title" itemprop="name headline">CocoaPods 私有仓库使用</h1>
         
 
         <div class="post-meta">
@@ -304,8 +304,8 @@
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-08-02T10:29:59+08:00">
-                2017-08-02
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-09-12T18:02:05+08:00">
+                2017-09-12
               </time>
             
 
@@ -327,8 +327,8 @@
               
               
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/iOS/" itemprop="url" rel="index">
-                    <span itemprop="name">iOS</span>
+                  <a href="/categories/iOS组件化/" itemprop="url" rel="index">
+                    <span itemprop="name">iOS组件化</span>
                   </a>
                 </span>
 
@@ -366,40 +366,78 @@
       
 
       
-        <p>为什么使用持续部署？</p>
-<p>工作多年的老司机会白你一眼，『为什么要手动部署？』。</p>
-<ol>
-<li>为了追求手动生成各种证书时候的快感？</li>
-<li>为了享受在iTunes Connect上传ipa的等待？</li>
-<li>为了展示Archive各种测试包的熟练？</li>
+        <p>CocoaPods是iOS中使用很广泛的第三方包管理工具，我们可以用来制作自己的开源代码库，也可以制作私有代码库。<br>基于这些功能，我们可以用它来作为iOS的组件化管理工具。</p>
+<h1 id="总体步骤"><a href="#总体步骤" class="headerlink" title="总体步骤"></a>总体步骤</h1><ol>
+<li>创建私有Spec仓库来管理私有的podspec文件</li>
+<li>创建私有的Pod工程文件，并提交到远程git托管平台</li>
+<li>创建私有的Pod对应的podspec文件</li>
+<li>验证podspec文件的有效性</li>
+<li>提交podspec至私有的Spec仓库</li>
+<li>创建主工程使用私有的Pod</li>
+<li>更新私有的Pod文件</li>
 </ol>
-<p>以上，如果有一项能够让你觉得舒服。请自动忽略本篇博客。</p>
-<h1 id="Fastlane"><a href="#Fastlane" class="headerlink" title="Fastlane"></a>Fastlane</h1><p>一组工具套件，旨在实现 <code>iOS</code> 应用发布流程的自动化，并且提供一个运行良好的持续部署流程，只需要运行一个简单的命令就可以触发这个流程。</p>
-<h1 id="安装-使用"><a href="#安装-使用" class="headerlink" title="安装 + 使用"></a>安装 + 使用</h1><p><a href="https://docs.fastlane.tools/" target="_blank" rel="external">Fastlane 官方教程</a></p>
-<p>官方的文档很详细，还有很多的示例。可以充分满足你的需求，如果还有不明白或者不理解的：</p>
-<p><a href="https://github.com/fastlane/fastlane/issues" target="_blank" rel="external">GitHub 提问题</a></p>
-<p>会有<code>很多人</code> <code>非常快速</code> <code>完美的</code> 解决你的问题。</p>
-<h1 id="Fastlane-工具链"><a href="#Fastlane-工具链" class="headerlink" title="Fastlane 工具链"></a>Fastlane 工具链</h1><ul>
-<li><a href="https://fastlane.tools/" target="_blank" rel="external">fastlane</a>：自动化iOS和Android应用的beta部署和发布</li>
-<li><a href="https://github.com/fastlane/fastlane/tree/master/deliver" target="_blank" rel="external">deliver</a>：将截图，元数据和应用上传到App Store</li>
-<li><a href="https://github.com/fastlane/fastlane/tree/master/snapshot" target="_blank" rel="external">snapshot</a>：在每个设备上自动执行iOS应用的本地化屏幕截图</li>
-<li><a href="https://github.com/fastlane/fastlane/tree/master/frameit" target="_blank" rel="external">frameit</a>：快速截屏并将截屏放入设备中</li>
-<li><a href="https://github.com/fastlane/fastlane/tree/master/pem" target="_blank" rel="external">pem</a>：自动生成和更新推送通知配置文件</li>
-<li><a href="https://github.com/fastlane/fastlane/tree/master/produce" target="_blank" rel="external">produce</a>：使用命令行在iTunes Connect和Dev Portal上创建新的iOS应用程序</li>
-<li><a href="https://github.com/fastlane/fastlane/tree/master/cert" target="_blank" rel="external">cert</a>：自动创建和维护iOS代码签名证书</li>
-<li><a href="https://github.com/fastlane/fastlane/tree/master/spaceship" target="_blank" rel="external">spaceship</a>：Ruby库访问Apple Dev Center和iTunes Connect</li>
-<li><a href="https://github.com/fastlane/fastlane/tree/master/pilot" target="_blank" rel="external">pilot</a>：从终端管理TestFlight测试人员和构建的最佳方式</li>
-<li><a href="https://github.com/fastlane/boarding" target="_blank" rel="external">boarding</a>：邀请TestFlight beta测试人员</li>
-<li><a href="https://github.com/fastlane/fastlane/tree/master/scan" target="_blank" rel="external">scan</a>：运行iOS和Mac应用程序测试</li>
-<li><a href="https://github.com/fastlane/fastlane/tree/master/match" target="_blank" rel="external">match</a>：使用git同步团队的证书和配置文件</li>
-<li><a href="https://github.com/fastlane/fastlane/tree/master/precheck" target="_blank" rel="external">precheck</a>：使用社区驱动的App Store评估规则检查您的应用程序，以避免被拒绝</li>
-</ul>
-<h1 id="TIPS"><a href="#TIPS" class="headerlink" title="TIPS"></a>TIPS</h1><p>不管你是看官方文档，还是Google。大神们都已经把 <code>Fastlane</code> 讲解的很清楚了，使用也很简单。我这里就不再过多的解释怎么使用了。</p>
-<p>有一个注意的点，安装完成后，会在项目根目录生成 <code>Gemfile</code> 文件。打开查看，一定要保证 <code>source</code> 跟你本地安装 <code>Gem</code> 的 <code>source</code> 的源一样。</p>
-<p>查看本地gem源，终端 <code>gem source l</code></p>
-<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><p><a href="https://whlsxl.github.io/fastlane1/" target="_blank" rel="external">小团队的自动化发布－Fastlane带来的全自动化发布</a></p>
-<p><a href="http://www.jianshu.com/p/002e1061ee08" target="_blank" rel="external">使用 fir 和 fastlane 实现 iOS 持续集成</a></p>
-<p><a href="https://docs.fastlane.tools/actions/" target="_blank" rel="external">fastlane docs</a></p>
+<h1 id="创建私有Spec仓库"><a href="#创建私有Spec仓库" class="headerlink" title="创建私有Spec仓库"></a>创建私有Spec仓库</h1><p>我们知道安装Cocoapods后，会在本地生成一个官方的Spec仓库master，文件地址在 <code>~/.cocoapods/repos</code> 目录，远程地址 <code>https://github.com/CocoaPods/Specs.git</code><br>私有的 Spec 仓库和 CocoaPods 官方结构一致，用于存放spec文件。私有 Spec 仓库需要 git 托管平台，这里我是用的是 <code>Bitbucket</code><br>首先，在 <code>Bitbucket</code> 上新建项目 <code>MyPrivateSepc</code> , <code>https://huxiaoyang@bitbucket.org/huxiaoyang/MyPrivateSepc.git</code><br>然后，在终端执行：<code>pod repo add MyPrivateSepc https://huxiaoyang@bitbucket.org/huxiaoyang/MyPrivateSepc.git</code><br>执行完后，打开 <code>~/.cocoapods/repos</code> 目录，你会发现 <code>Cocoapods</code> 把 <code>MyPrivateSepc</code> clone到了本地，这样私有仓库就创建成功了</p>
+<h1 id="创建私有的pod工程文件"><a href="#创建私有的pod工程文件" class="headerlink" title="创建私有的pod工程文件"></a>创建私有的pod工程文件</h1><p>在<code>Bitbucket</code>上新建项目用于存放私有的pod工程源码，两种方式创建：</p>
+<ol>
+<li><p>在本地创建工程，然后提交到 <code>Bitbucket</code><br> 步骤一：切换到您的仓库的目录</p>
+<pre><code>cd /path/to/your/repo
+</code></pre><p> 步骤二：连接您的现有仓库与 Bitbucket</p>
+<pre><code>git remote add origin ssh://git@bitbucket.org/huxiaoyang/test.git
+git push -u origin master
+</code></pre></li>
+<li><p>在 <code>Bitbucket</code> 创建工程，然后 clone 到本地</p>
+<pre><code>git clone
+git@bitbucket.org:huxiaoyang/XXXX.git`
+cd XXXX
+echo &quot;# My project&apos;s README&quot; &gt;&gt; README.md
+git add README.md
+git commit -m &quot;Initial commit&quot;
+git push -u origin master
+</code></pre></li>
+</ol>
+<h1 id="创建私有Pod的-Podspec"><a href="#创建私有Pod的-Podspec" class="headerlink" title="创建私有Pod的 Podspec"></a>创建私有Pod的 Podspec</h1><ol>
+<li>在工程的根目录下执行：<code>pod spec create 工程名</code>，创建成功后会在根目录下生成 <code>工程名.podspec</code> 文件。</li>
+<li>根据你的需求修改 <code>.podspec</code> 文件，这里不做具体的讲解，可以查看官网教程 <a href="https://guides.cocoapods.org/syntax/podspec.html" target="_blank" rel="external">Podspec Syntax Reference</a></li>
+<li><p>push代码到远端</p>
+<pre><code>git add .
+git commit -m &quot; &quot;
+git push origin master
+</code></pre></li>
+<li><p>给工程打 tag 并 push 到远端：</p>
+<pre><code>git tag -a &quot;0.0.1&quot; -m &quot; &quot;
+git push --tags
+</code></pre></li>
+<li><p>验证<code>Podspec</code>文件的有效性，</p>
+<pre><code>pod lib lint 工程名.podspec
+pod spec lint 工程名.podspec
+</code></pre></li>
+</ol>
+<p>如果有警告，不想修改又想通过验证，在命令后添加：<code>--allow-warnings</code></p>
+<p>都验证通过后，<code>Podspec</code>文件配置成功</p>
+<h1 id="提交-Podspec-至私有-Spec-仓库"><a href="#提交-Podspec-至私有-Spec-仓库" class="headerlink" title="提交 Podspec 至私有 Spec 仓库"></a>提交 Podspec 至私有 Spec 仓库</h1><p>在 <code>工程名.podspec</code> 文件目录执行： <code>pod repo push MyPrivateSepc 工程名.podspec</code></p>
+<blockquote>
+<p>这里额外说明一下，如果制作开源库，需要提交到官方仓库，<code>pod trunk push 工程名.podspec</code> </p>
+</blockquote>
+<h1 id="新建项目使用"><a href="#新建项目使用" class="headerlink" title="新建项目使用"></a>新建项目使用</h1><p>新建 <code>Xcode</code> 工程，在工程根目录下执行 ：<code>pod init</code> 生成 <code>Podfile</code> ，或者直接创建 <code>.Podfile</code> 文件。<br>在 <code>Podfile</code> 文件开头添加:</p>
+<pre><code>source &apos;https://github.com/CocoaPods/Specs.git&apos;
+source &apos;https://huxiaoyang@bitbucket.org/huxiaoyang/MyPrivateSepc.git&apos;
+</code></pre><p>执行 <code>pod install</code> 完成安装</p>
+<h1 id="更新Pod"><a href="#更新Pod" class="headerlink" title="更新Pod"></a>更新Pod</h1><ol>
+<li>修改 podspec 文件中的 s.version.</li>
+<li>修改工程代码，打tag，tag名称和 s.version 一致，并 push 到远程仓库.</li>
+<li>验证 podspec 文件的有效性.</li>
+<li>推送 podspec 文件到远程仓库.</li>
+<li>执行 <code>pod search 工程名</code> 验证结果.</li>
+</ol>
+<h1 id="TIPS"><a href="#TIPS" class="headerlink" title="TIPS"></a>TIPS</h1><p>首次安装 Cocoapods 会下载官方仓库到本地，受GFW的影响有时候会很慢。<br>可以在终端执行 <code>cd ~/.cocoapods</code> ，然后执行 <code>du -sh *</code>， 查看下载进度</p>
+<p>上传到库成功后，使用 <code>pod search</code> 检查时报错 <code>Unable to find a pod with name, author, summary</code></p>
+<blockquote>
+<p>解决方案： <code>rm ~/Library/Caches/CocoaPods/search_index.json</code></p>
+</blockquote>
+<p>验证 podspec 文件时，报错 <code>Unable to find a specification for [PrivateSpec] depended upon by [PrivateClientSpec]</code></p>
+<blockquote>
+<p>解决方案： <code>pod spec lint --sources=&#39;git@our-private-spec-repo:iOS/Specs.git,https://github.com/CocoaPods/Specs</code></p>
+</blockquote>
 
       
     </div>
@@ -429,9 +467,9 @@
       
         <div class="post-tags">
           
-            <a href="/tags/iOS/" rel="tag"># iOS</a>
+            <a href="/tags/CocoaPods/" rel="tag"># CocoaPods</a>
           
-            <a href="/tags/工具/" rel="tag"># 工具</a>
+            <a href="/tags/iOS组件化/" rel="tag"># iOS组件化</a>
           
         </div>
       
@@ -444,8 +482,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2017/07/27/Moya-RxSwift-HandyJSON-实现函数式网络请求/" rel="next" title="Moya + RxSwift + HandyJSON 实现函数式网络请求">
-                <i class="fa fa-chevron-left"></i> Moya + RxSwift + HandyJSON 实现函数式网络请求
+              <a href="/2017/08/07/iOS日志系统/" rel="next" title="iOS日志系统">
+                <i class="fa fa-chevron-left"></i> iOS日志系统
               </a>
             
           </div>
@@ -453,10 +491,6 @@
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
-            
-              <a href="/2017/08/07/iOS日志系统/" rel="prev" title="iOS日志系统">
-                iOS日志系统 <i class="fa fa-chevron-right"></i>
-              </a>
             
           </div>
         </div>
@@ -588,7 +622,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Fastlane"><span class="nav-number">1.</span> <span class="nav-text">Fastlane</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#安装-使用"><span class="nav-number">2.</span> <span class="nav-text">安装 + 使用</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Fastlane-工具链"><span class="nav-number">3.</span> <span class="nav-text">Fastlane 工具链</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#TIPS"><span class="nav-number">4.</span> <span class="nav-text">TIPS</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#参考"><span class="nav-number">5.</span> <span class="nav-text">参考</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#总体步骤"><span class="nav-number">1.</span> <span class="nav-text">总体步骤</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#创建私有Spec仓库"><span class="nav-number">2.</span> <span class="nav-text">创建私有Spec仓库</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#创建私有的pod工程文件"><span class="nav-number">3.</span> <span class="nav-text">创建私有的pod工程文件</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#创建私有Pod的-Podspec"><span class="nav-number">4.</span> <span class="nav-text">创建私有Pod的 Podspec</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#提交-Podspec-至私有-Spec-仓库"><span class="nav-number">5.</span> <span class="nav-text">提交 Podspec 至私有 Spec 仓库</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#新建项目使用"><span class="nav-number">6.</span> <span class="nav-text">新建项目使用</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#更新Pod"><span class="nav-number">7.</span> <span class="nav-text">更新Pod</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#TIPS"><span class="nav-number">8.</span> <span class="nav-text">TIPS</span></a></li></ol></div>
             
 
           </div>
