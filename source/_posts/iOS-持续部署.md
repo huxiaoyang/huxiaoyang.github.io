@@ -61,4 +61,4 @@ categories: iOS
 
 [使用 fir 和 fastlane 实现 iOS 持续集成](http://www.jianshu.com/p/002e1061ee08)
 
-[fastlane docs](https://docs.fastlane.tools/)
+[fastlane docs](https://docs.fastlane.tools/actions/)
