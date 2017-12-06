@@ -100,7 +100,7 @@
 <meta property="og:url" content="http://walled.men/2017/11/08/关于Swift页面跳转路由的设计思路/index.html">
 <meta property="og:site_name" content="Walled">
 <meta property="og:description" content="为什么要设计一个页面跳转的路由？ 因为，不想在整个项目中到处播撒下面的代码… 12let VC = UIViewController()self.navigationController?.pushViewController(VC, animated: true) 不易维护，而且耦合严重。 如果你觉得以上这些都不是事儿，我只管写不管维护，干三个月我就走人了。  请自动忽略下面的内容，并 cmd">
-<meta property="og:updated_time" content="2017-11-08T09:14:22.000Z">
+<meta property="og:updated_time" content="2017-12-06T10:24:57.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="关于Swift页面跳转路由的设计思路">
 <meta name="twitter:description" content="为什么要设计一个页面跳转的路由？ 因为，不想在整个项目中到处播撒下面的代码… 12let VC = UIViewController()self.navigationController?.pushViewController(VC, animated: true) 不易维护，而且耦合严重。 如果你觉得以上这些都不是事儿，我只管写不管维护，干三个月我就走人了。  请自动忽略下面的内容，并 cmd">
@@ -415,7 +415,7 @@
 <figure class="highlight swift"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">let</span> <span class="type">Page</span> = <span class="type">PageProvider</span>&lt;<span class="type">PageControlRouter</span>&gt;()</div></pre></td></tr></table></figure>
 <p>使用：</p>
 <figure class="highlight swift"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line"><span class="comment">/// 1. 不带参数</span></div><div class="line"><span class="type">Page</span>.jump(.login)</div><div class="line"></div><div class="line"><span class="comment">/// 2. 带参数</span></div><div class="line"><span class="type">Page</span>.jump(.login, parameters: [<span class="string">"key"</span>: <span class="string">"value"</span>])</div><div class="line"><span class="comment">/// 参数使用 target Controller内</span></div><div class="line"><span class="keyword">let</span> value = getExtra(<span class="string">"key"</span>)</div></pre></td></tr></table></figure>
-<h2 id="DEMO"><a href="#DEMO" class="headerlink" title="DEMO"></a>DEMO</h2><p>稍后附上…</p>
+<h2 id="DEMO"><a href="#DEMO" class="headerlink" title="DEMO"></a>DEMO</h2><p><a href="https://github.com/huxiaoyang/PageRouter/tree/master" target="_blank" rel="external">GitHub</a></p>
 
       
     </div>
