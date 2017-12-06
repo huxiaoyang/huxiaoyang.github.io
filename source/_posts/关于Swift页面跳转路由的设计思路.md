@@ -346,4 +346,4 @@ let value = getExtra("key")
 
 ## DEMO
 
-稍后附上...
+[GitHub](https://github.com/huxiaoyang/PageRouter/tree/master)
