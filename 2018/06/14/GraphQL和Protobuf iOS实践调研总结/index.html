@@ -1,0 +1,770 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.1" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="GraphQL,Swift," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.1" />
+
+
+
+
+
+
+<meta name="description" content="什么是GraphQL？简单的说，GraphQL 是（一种描述请求数据方法的语法 / 一种API查询语言），通常用于客户端从服务端加载数据。GraphQL 有以下三个主要特征：  它允许客户端指定具体所需的数据。 它让从多个数据源汇总取数据变得更简单。 它使用了类型系统来描述数据。   大白话版：GraphQL 为数据通信而生。你有一个客户端和一个服务器，它们需要相互通信。客户端需要告知服务器需要哪">
+<meta name="keywords" content="GraphQL,Swift">
+<meta property="og:type" content="article">
+<meta property="og:title" content="GraphQL和Protobuf-iOS端实践调研">
+<meta property="og:url" content="http://walled.men/2018/06/14/GraphQL和Protobuf iOS实践调研总结/index.html">
+<meta property="og:site_name" content="Walled">
+<meta property="og:description" content="什么是GraphQL？简单的说，GraphQL 是（一种描述请求数据方法的语法 / 一种API查询语言），通常用于客户端从服务端加载数据。GraphQL 有以下三个主要特征：  它允许客户端指定具体所需的数据。 它让从多个数据源汇总取数据变得更简单。 它使用了类型系统来描述数据。   大白话版：GraphQL 为数据通信而生。你有一个客户端和一个服务器，它们需要相互通信。客户端需要告知服务器需要哪">
+<meta property="og:updated_time" content="2018-06-14T08:40:40.022Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="GraphQL和Protobuf-iOS端实践调研">
+<meta name="twitter:description" content="什么是GraphQL？简单的说，GraphQL 是（一种描述请求数据方法的语法 / 一种API查询语言），通常用于客户端从服务端加载数据。GraphQL 有以下三个主要特征：  它允许客户端指定具体所需的数据。 它让从多个数据源汇总取数据变得更简单。 它使用了类型系统来描述数据。   大白话版：GraphQL 为数据通信而生。你有一个客户端和一个服务器，它们需要相互通信。客户端需要告知服务器需要哪">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    sidebar: {"position":"left","display":"hide","offset":12,"offset_float":0,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://walled.men/2018/06/14/GraphQL和Protobuf iOS实践调研总结/"/>
+
+
+
+
+
+  <title>GraphQL和Protobuf-iOS端实践调研 | Walled</title>
+  
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "//tajs.qq.com/stats?sId=63067043";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Walled</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="http://walled.men/2018/06/14/GraphQL和Protobuf iOS实践调研总结/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Void">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/uploads/huyang.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Walled">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">GraphQL和Protobuf-iOS端实践调研</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-06-14T14:57:02+08:00">
+                2018-06-14
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/GraphQL/" itemprop="url" rel="index">
+                    <span itemprop="name">GraphQL</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="什么是GraphQL？"><a href="#什么是GraphQL？" class="headerlink" title="什么是GraphQL？"></a>什么是GraphQL？</h2><p>简单的说，GraphQL 是（一种描述请求数据方法的语法 / 一种API查询语言），通常用于客户端从服务端加载数据。<br>GraphQL 有以下三个主要特征：</p>
+<ul>
+<li>它允许客户端指定具体所需的数据。</li>
+<li>它让从多个数据源汇总取数据变得更简单。</li>
+<li>它使用了类型系统来描述数据。</li>
+</ul>
+<blockquote>
+<p>大白话版：<br>GraphQL 为数据通信而生。你有一个客户端和一个服务器，它们需要相互通信。客户端需要告知服务器需要哪些数据，服务器需要用实际的数据来满足客户端的数据需求。GraphQL 是此种通信方式的中介</p>
+</blockquote>
+<h3 id="GraphQL是怎么诞生的呢？"><a href="#GraphQL是怎么诞生的呢？" class="headerlink" title="GraphQL是怎么诞生的呢？"></a>GraphQL是怎么诞生的呢？</h3><p>GraphQL 是由 Facebook 开发的，用于解决他们巨大、老旧的架构的数据请求问题。并于2015年将 GraphQL 开源。</p>
+<p>目前已经形成完善的社区</p>
+<ul>
+<li><a href="https://github.com/graphql" target="_blank" rel="external">GraphQL</a></li>
+<li><a href="https://github.com/chentsulin/awesome-graphql" target="_blank" rel="external">awesome-graphql</a></li>
+<li><a href="http://graphql.cn/" target="_blank" rel="external">GraphQL 中国</a></li>
+</ul>
+<h3 id="GraphQL介绍和优缺点"><a href="#GraphQL介绍和优缺点" class="headerlink" title="GraphQL介绍和优缺点"></a>GraphQL介绍和优缺点</h3><p>这里我不再详细的做个人分析，献上几篇译文：</p>
+<ul>
+<li><a href="https://juejin.im/post/58fd6d121b69e600589ec740" target="_blank" rel="external">我经常听到的 GraphQL 到底是什么？</a></li>
+<li><a href="https://www.zcfy.cc/article/rest-apis-are-rest-in-peace-apis-long-live-graphql" target="_blank" rel="external">安息吧 REST API，GraphQL 长存</a></li>
+<li><a href="http://jerryzou.com/posts/10-questions-about-graphql/" target="_blank" rel="external">阻碍你使用 GraphQL 的十个问题</a></li>
+<li><p><a href="https://juejin.im/post/59793f625188253ded721c70" target="_blank" rel="external">GraphQL vs. REST</a></p>
+</li>
+<li><p><a href="http://taobaofed.org/blog/2016/03/10/graphql-in-depth/" target="_blank" rel="external">淘宝前端团队：深入理解 GraphQL</a></p>
+</li>
+</ul>
+<h3 id="GraphQL-在-iOS-端的使用"><a href="#GraphQL-在-iOS-端的使用" class="headerlink" title="GraphQL 在 iOS 端的使用"></a>GraphQL 在 iOS 端的使用</h3><p>GraphQL 在客户端的使用需要借助 Relay 或者 Apollo-Client。但是 Relay 不支持 OC 和 Swift。<br>所以这里主要调研了 Apollo-iOS</p>
+<ul>
+<li><a href="https://blog.csdn.net/kmyhy/article/details/77161966" target="_blank" rel="external">GraphQL 和 Apollo-iOS</a></li>
+<li><a href="https://github.com/apollographql/apollo-ios" target="_blank" rel="external">apollo-client-ios</a></li>
+</ul>
+<blockquote>
+<p>Tips: 在服务端更新node后，客户端必须要更新schema.json文件，再次运行下面的命令。</p>
+</blockquote>
+<figure class="highlight ruby"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">apollo-codegen download-schema __SIMPLE_API_ENDPOINT_<span class="number">_</span> --output $(文件路径)/schema.json</div><div class="line"><span class="comment"># __SIMPLE_API_ENDPOINT__ 替换成服务端地址</span></div></pre></td></tr></table></figure>
+<h2 id="什么是Protobuf？"><a href="#什么是Protobuf？" class="headerlink" title="什么是Protobuf？"></a>什么是Protobuf？</h2><p>Protocol Buffers (简称 Protobuf) 是 Google 公司内部的混合语言数据标准，目前已经正在使用的有超过 48,162 种报文格式定义和超过 12,183 个 .proto 文件。他们用于 RPC 系统和持续数据存储系统。</p>
+<p>Protocol Buffers 是一种轻便高效的结构化数据存储格式，可以用于结构化数据串行化，或者说序列化。它很适合做数据存储或 RPC 数据交换格式。可用于通讯协议、数据存储等领域的语言无关、平台无关、可扩展的序列化结构数据格式。</p>
+<h3 id="Protobuf的使用"><a href="#Protobuf的使用" class="headerlink" title="Protobuf的使用"></a>Protobuf的使用</h3><p>它并不难使用，相反，简单易上手还是它的优点，参考：</p>
+<ul>
+<li><a href="https://www.jianshu.com/p/25baebc411fe" target="_blank" rel="external">Introduction to Protocol Buffers on iOS</a></li>
+<li><a href="https://github.com/apple/swift-protobuf" target="_blank" rel="external">swift-protobuf</a></li>
+</ul>
+<h3 id="GraphQL-和-Protobuf"><a href="#GraphQL-和-Protobuf" class="headerlink" title="GraphQL 和 Protobuf"></a>GraphQL 和 Protobuf</h3><p>这里说一下，难点在于服务端使用 Protobuf 源生成统一的GraphQL schema。</p>
+<p>Google开源了方案，使用 <a href="https://github.com/google/rejoiner" target="_blank" rel="external">rejoiner</a> 框架。</p>
+<p>客户端反而简单，只需要多写一个.proto文件，然后在使用 GraphQL 创建 Query 后，结合Apollo-client 获取返回值后用Prototbuf解析就可以了</p>
+<figure class="highlight swift"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div></pre></td><td class="code"><pre><div class="line"></div><div class="line"><span class="class"><span class="keyword">extension</span> <span class="title">ApolloClient</span> </span>&#123;</div><div class="line">  @discardableResult</div><div class="line">  <span class="function"><span class="keyword">func</span> <span class="title">fetch</span>&lt;Query: GraphQLQuery&gt;<span class="params">(query: Query, resultHandler: ResultHandler&lt;Query&gt;? = <span class="literal">nil</span>)</span></span> -&gt; <span class="type">Cancellable</span> &#123;</div><div class="line">    <span class="keyword">return</span> fetch(query: query, cachePolicy: <span class="type">CachePolicy</span>.fetchIgnoringCacheData, queue: <span class="type">DispatchQueue</span>.main) &#123; (result, error) <span class="keyword">in</span></div><div class="line">      <span class="keyword">if</span> <span class="keyword">let</span> error = error &#123;</div><div class="line">        resultHandler?(.failure(<span class="type">SunTravelClientError</span>.underlyingError(error)))</div><div class="line">      &#125; <span class="keyword">else</span> <span class="keyword">if</span> <span class="keyword">let</span> errors = result?.errors &#123;</div><div class="line">        resultHandler?(.failure(<span class="type">SunTravelClientError</span>.underlyingErrors(errors)))</div><div class="line">      &#125; <span class="keyword">else</span> <span class="keyword">if</span> <span class="keyword">let</span> data = result?.data &#123;</div><div class="line">        <span class="comment">/// 关键的异步：解析.proto文件</span></div><div class="line">        <span class="keyword">let</span> contact = <span class="keyword">try</span>? <span class="type">Contact</span>(protobuf: data)</div><div class="line">        resultHandler?(.success(contact))</div><div class="line">      &#125; <span class="keyword">else</span> &#123;</div><div class="line">        resultHandler?(.failure(<span class="type">SunTravelClientError</span>.invalidResponse))</div><div class="line">      &#125;</div><div class="line">    &#125;</div><div class="line">  &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/GraphQL/" rel="tag"># GraphQL</a>
+          
+            <a href="/tags/Swift/" rel="tag"># Swift</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/04/16/iTerm2-theme-for-MAC/" rel="next" title="iTerm2-Theme-for-MAC">
+                <i class="fa fa-chevron-left"></i> iTerm2-Theme-for-MAC
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div id="lv-container" data-id="city" data-uid="MTAyMC8yOTU3OC82MTQ2"></div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/uploads/huyang.png"
+               alt="Void" />
+          <p class="site-author-name" itemprop="name">Void</p>
+           
+              <p class="site-description motion-element" itemprop="description">Someone crossed my mind</p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives/">
+                <span class="site-state-item-count">14</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">6</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">10</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#什么是GraphQL？"><span class="nav-number">1.</span> <span class="nav-text">什么是GraphQL？</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#GraphQL是怎么诞生的呢？"><span class="nav-number">1.1.</span> <span class="nav-text">GraphQL是怎么诞生的呢？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#GraphQL介绍和优缺点"><span class="nav-number">1.2.</span> <span class="nav-text">GraphQL介绍和优缺点</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#GraphQL-在-iOS-端的使用"><span class="nav-number">1.3.</span> <span class="nav-text">GraphQL 在 iOS 端的使用</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#什么是Protobuf？"><span class="nav-number">2.</span> <span class="nav-text">什么是Protobuf？</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Protobuf的使用"><span class="nav-number">2.1.</span> <span class="nav-text">Protobuf的使用</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#GraphQL-和-Protobuf"><span class="nav-number">2.2.</span> <span class="nav-text">GraphQL 和 Protobuf</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Void</span>
+</div>
+
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.1"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.1"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.1"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.1"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.1"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+    <script type="text/javascript">
+      (function(d, s) {
+        var j, e = d.getElementsByTagName(s)[0];
+        if (typeof LivereTower === 'function') { return; }
+        j = d.createElement(s);
+        j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
+        j.async = true;
+        e.parentNode.insertBefore(j, e);
+      })(document, 'script');
+    </script>
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
